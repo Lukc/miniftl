@@ -8,6 +8,7 @@ class
 		@scrap    = 0
 		@missiles = 0
 		@fuel     = 0
+		@parts    = 0
 
 		@rooms   = {}
 		@doors   = {}
@@ -29,4 +30,7 @@ class
 
 		system.room = room
 		room.system = system
+
+	finalize: () =>
+		@tiles = {}
 

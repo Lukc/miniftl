@@ -5,29 +5,23 @@ System = require "system"
 
 test = Ship!
 
-test\addRoom (Room 2, 2), {x: 1, y: 1}
+with test
+	\addRoom (Room 2, 2), {x: 1, y: 1}
+	\addRoom (Room 2, 1), {x: 3, y: 1}
+	\addRoom (Room 1, 2), {x: 1, y: 3}
+	\addRoom (Room 2, 2), {x: 1, y: 5}
+	\addRoom (Room 2, 1), {x: 5, y: 1}
 
-test\addRoom (Room 2, 1), {x: 3, y: 1}
+	\addDoor {x: 2, y: 1}, "vertical"
+	\addDoor {x: 4, y: 1}, "vertical"
+	\addDoor {x: 1, y: 2}, "horizontal"
+	\addDoor {x: 1, y: 4}, "horizontal"
 
-test\addRoom (Room 1, 2), {x: 1, y: 3}
+	\addSystem (System "Engines"), test.rooms[1]
+	\addSystem (System!), test.rooms[2]
+	\addSystem (System!), test.rooms[4]
 
-test\addRoom (Room 2, 2), {x: 1, y: 5}
-
-test\addRoom (Room 2, 1), {x: 5, y: 1}
-
-test\addDoor {x: 2, y: 1}, "vertical"
-
-test\addDoor {x: 4, y: 1}, "vertical"
-
-test\addDoor {x: 1, y: 2}, "horizontal"
-
-test\addDoor {x: 1, y: 4}, "horizontal"
-
-test\addSystem (System "Engines"), test.rooms[1]
-
-test\addSystem (System!), test.rooms[2]
-
-test\addSystem (System!), test.rooms[4]
+	\finalize!
 
 for room in *test.rooms
 	print room
