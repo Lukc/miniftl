@@ -1,4 +1,7 @@
 
+yui = require ".yui.init"
+SDL = require "SDL"
+
 Ship = require "ship"
 Room = require "room"
 System = require "system"
@@ -66,4 +69,56 @@ for line in *buffer
 	for char in *line
 		io.write char
 	io.write "\n"
+
+yui.init!
+
+yui\loadFont "default", "DejaVuSans.ttf", 18
+
+w = yui.Window {
+	width:  1280,
+	height: 1024,
+	flags: {SDL.window.resizable},
+
+	events:
+		draw: () =>
+
+	yui.Column {
+		yui.Frame {
+			height: 300,
+			events:
+				update: (dt) =>
+					root = self\getRoot!
+					self.realWidth = root.width
+		},
+		yui.Row {
+			events:
+				update: (dt) =>
+					root = self\getRoot!
+					self.realHeight = root.height - 600
+
+			yui.Column {
+				width: 400,
+
+				events:
+					update: (dt) =>
+						self.realWidth = self.parent.realWidth
+			}
+		},
+		yui.Row {
+			height: 300,
+			events:
+				update: (dt) =>
+					if #@children == 0
+						for i = 1, 10
+							self\addChild yui.Column {
+								height: 240,
+								width: 60,
+							}
+		}
+	}
+}
+
+c = true
+while c do
+	c = yui\run {w}
 

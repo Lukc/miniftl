@@ -1,0 +1,3 @@
+[submodule "yui"]
+	path = yui
+	url = ./yui
