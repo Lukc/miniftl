@@ -21,8 +21,9 @@ with test
 	\addDoor {x: 1, y: 4}, "horizontal"
 
 	\addSystem (System "Engines"), test.rooms[1]
-	\addSystem (System!), test.rooms[2]
-	\addSystem (System!), test.rooms[4]
+	\addSystem (System "Weapons"), test.rooms[2]
+	\addSystem (System "Shields"), test.rooms[4]
+	\addSystem (System "Life Support"), test.rooms[5]
 
 	\finalize!
 
@@ -77,10 +78,22 @@ yui\loadFont "default", "DejaVuSans.ttf", 18
 w = yui.Window {
 	width:  1280,
 	height: 1024,
-	flags: {SDL.window.resizable},
+	flags: {SDL.window.Resizable},
 
 	events:
-		draw: () =>
+		draw: (renderer) =>
+			for room in *test.rooms
+				{:x, :y} = room.position
+
+				rect = {
+					x: 400 + x * 48,
+					y: 300 + y * 48,
+					w: 48 * room.width,
+					h: 48 * room.height
+				}
+
+				renderer\setDrawColor 0xFFFFFF
+				renderer\drawRect rect
 
 	yui.Column {
 		yui.Frame {
@@ -91,6 +104,7 @@ w = yui.Window {
 					self.realWidth = root.width
 		},
 		yui.Row {
+			width: 400,
 			events:
 				update: (dt) =>
 					root = self\getRoot!
@@ -102,6 +116,10 @@ w = yui.Window {
 				events:
 					update: (dt) =>
 						self.realWidth = self.parent.realWidth
+
+				yui.Button {
+					height: 200
+				}
 			}
 		},
 		yui.Row {
@@ -109,10 +127,17 @@ w = yui.Window {
 			events:
 				update: (dt) =>
 					if #@children == 0
-						for i = 1, 10
-							self\addChild yui.Column {
-								height: 240,
-								width: 60,
+						for system in *test.systems
+							self\addChild yui.Frame {
+								width: 80,
+								events:
+									update: (dt) =>
+										--self.y = self.parent.height - self.realHeight
+										self.realHeight = self.parent.height
+
+								yui.Label {
+									text: system.name
+								}
 							}
 		}
 	}
