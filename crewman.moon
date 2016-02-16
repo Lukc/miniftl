@@ -17,3 +17,6 @@ class
 	gainExperience: (domain) =>
 		@experience[domain] += 1
 
+	move: destination =>
+		@position = destination
+

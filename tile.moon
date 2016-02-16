@@ -1,12 +1,13 @@
 
 class
-	new: =>
+	new:(x,y)  =>
 		@fire = 0
 		@breach = 0
 		@air = 100
 		@links ={}
-		@x = x
-		@y = y
+		@position =
+			x: x
+			y: y
 		
 	addLink: (tile, door, direction) =>
 		@links[#@links+1] = {
