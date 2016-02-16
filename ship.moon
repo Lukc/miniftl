@@ -15,6 +15,9 @@ class
 		@doors   = {}
 		@systems = {}
 
+		-- Sane default value.
+		@power   = 8
+
 	addRoom: (room, to) =>
 		@rooms[#@rooms+1] = room
 
@@ -26,11 +29,16 @@ class
 			type: type
 		}
 
-	addSystem: (system, room) =>
+	addSystem: (system, room, level) =>
+		system = system\clone!
+
 		@systems[#@systems+1] = system
 
 		system.room = room
 		room.system = system
+
+		if level
+			system.level = level
 
 	finalize: () =>
 		width = 1
@@ -56,9 +64,13 @@ class
 						@tiles[x][y]\addLink @tiles[x][y-1], nil, "up"
 		@tiles.width = width
 		@tiles.height = height
+
 		for door in *@doors
-			if door.type == "vertical"
-				@tiles[door.position.x][door.position.y]\addLink @tiles[door.position.x+1][door.position.y], door, "right"
-				
-			if door.type == "horizontal"
-				@tiles[door.position.x][door.position.y]\addLink @tiles[door.position.x][door.position.y+1], door, "down"
+			tile = @tiles[door.position.x][door.position.y]
+
+			if door.type == "vertical" and tile
+				tile\addLink @tiles[door.position.x+1][door.position.y], door, "right"
+
+			if door.type == "horizontal" and tile
+				tile\addLink @tiles[door.position.x][door.position.y+1], door, "down"
+
