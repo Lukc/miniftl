@@ -265,8 +265,8 @@ yui\loadFont "default", "DejaVuSans.ttf", 18
 
 w = yui.Window {
 	width:  1280,
-	height: 1024,
-	flags: {SDL.window.Resizable},
+	height: 800,
+	--flags: {SDL.window.Resizable},
 
 	theme:
 		drawRow: (r) =>
@@ -279,7 +279,7 @@ w = yui.Window {
 
 	ShipView {
 		x: 160,
-		y: 300,
+		y: 100,
 		width: 600,
 		height: 400,
 		ship: test
@@ -287,7 +287,7 @@ w = yui.Window {
 
 	ShipView {
 		x: 760,
-		y: 300,
+		y: 100,
 		width: 400,
 		height: 600,
 		ship: test,
@@ -301,7 +301,7 @@ w = yui.Window {
 		--	update: (dt) =>
 		--		@realWidth = @parent.realWidth
 		yui.Frame {
-			height: 300,
+			height: 100,
 			events:
 				update: (dt) =>
 					root = self\getRoot!
@@ -329,7 +329,7 @@ w = yui.Window {
 			events:
 				update: (dt) =>
 					root = self\getRoot!
-					self.realHeight = root.height - 600
+					self.realHeight = root.height - 376
 
 			yui.Column {
 				width: 160,
@@ -342,7 +342,7 @@ w = yui.Window {
 			}
 		},
 		yui.Row {
-			height: 300,
+			height: 276,
 			events:
 				update: (dt) =>
 					if #@children == 0
