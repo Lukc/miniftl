@@ -5,6 +5,7 @@ SDL = require "SDL"
 Ship = require "ship"
 Room = require "room"
 System = require "system"
+CrewMan = require "crewman"
 
 test = Ship!
 
@@ -51,6 +52,8 @@ with test
 	\addSystem (System "Weapons"), test.rooms[2], 2
 	\addSystem (System "Shields"), test.rooms[4], 2
 	\addSystem (System "Life Support"), test.rooms[5], 1
+
+	\addCrew (CrewMan "Bob"), {x: test.rooms[3].position.x, y: test.rooms[3].position.y}
 
 	\finalize!
 
@@ -111,24 +114,6 @@ ShipView =
 
 		self.ship = opts.ship
 
-	draw: (renderer) =>
-		for room in *@ship.rooms
-			{:x, :y} = room.position
-
-			rect = {
-				x: self.realX + x * 48,
-				y: self.realY + y * 48,
-				w: 48 * room.width,
-				h: 48 * room.height
-			}
-
-			if room.system
-				renderer\setDrawColor 0x00FFFF
-			else
-				renderer\setDrawColor 0xFFFFFF
-
-			renderer\drawRect rect
-
 		for door in *@ship.doors
 			{:x, :y} = door.position
 
@@ -146,11 +131,53 @@ ShipView =
 					w: 12,
 					h: 48 - 2 * 8
 
-			renderer\setDrawColor 0x888888
-			renderer\drawRect rect
+			yui.Widget.addChild self, yui.Button {
+				x: rect.x,
+				y: rect.y,
+				width: rect.w,
+				height: rect.h,
+				theme:
+					drawButton: (renderer) =>
+						if @hovered
+							renderer\setDrawColor 0x8888FF
+						else
+							renderer\setDrawColor 0x888888
+						renderer\drawRect self\rectangle!
+			}
 
+	draw: (renderer) =>
 		renderer\setDrawColor 0xFF8800
 		renderer\drawRect (self\rectangle!)
+
+		for room in *@ship.rooms
+			{:x, :y} = room.position
+
+			rect = {
+				x: self.realX + x * 48,
+				y: self.realY + y * 48,
+				w: 48 * room.width,
+				h: 48 * room.height
+			}
+
+			if room.system
+				renderer\setDrawColor 0x00FFFF
+			else
+				renderer\setDrawColor 0xFFFFFF
+
+			renderer\drawRect rect
+
+		for crew in *@ship.crew
+			rect = {
+				x: self.realX + crew.position.x * 48 + 8,
+				y: self.realY + crew.position.y * 48 + 8,
+				w: 32,
+				h: 32
+			}
+
+			renderer\setDrawColor 0x00FF88
+			renderer\drawRect rect
+
+		yui.Widget.draw self, renderer
 
 ShipView = yui.Object ShipView, yui.Widget
 
@@ -162,6 +189,15 @@ w = yui.Window {
 	width:  1280,
 	height: 1024,
 	flags: {SDL.window.Resizable},
+
+	theme:
+		drawRow: (r) =>
+			if @hovered
+				r\setDrawColor 0xFFFFFF
+			else
+				r\setDrawColor 0x888888
+
+			r\drawRect yui.growRectangle @rectangle!, 2
 
 	ShipView {
 		x: 160,
@@ -180,6 +216,11 @@ w = yui.Window {
 	},
 
 	yui.Column {
+		-- Expected window size.
+		width: 1280,
+		--events:
+		--	update: (dt) =>
+		--		@realWidth = @parent.realWidth
 		yui.Frame {
 			height: 300,
 			events:
@@ -226,7 +267,19 @@ w = yui.Window {
 								width: 60,
 								height: 10,
 								x: 10,
-								y: frame.parent.height - 72 - 5 - i * 15
+								y: frame.parent.height - 72 - 5 - i * 15,
+								theme:
+									drawButton: (renderer) =>
+										totalPower = 0
+										for system in *test.systems
+											totalPower += system.power
+
+										if test.power - totalPower >= i
+											renderer\setDrawColor 0x00FF00
+										else
+											renderer\setDrawColor 0xFF8800
+
+										renderer\fillRect self\rectangle!
 							}
 
 						for system in *test.systems
@@ -239,7 +292,20 @@ w = yui.Window {
 
 								yui.Label {
 									text: system.name
-								}
+								},
+								yui.Button
+									width: 72,
+									height: 72,
+									x: 5,
+									y: frame.parent.height - 72 - 5,
+									events:
+										click: (click) =>
+											if click == 1
+												if system.power < system.level
+													system.power = system.power + 1
+											elseif click == 3
+												if system.power > 0
+													system.power = system.power - 1
 							}
 
 							self\addChild frame
@@ -249,7 +315,15 @@ w = yui.Window {
 									width: 60,
 									height: 10,
 									x: 10,
-									y: frame.parent.height - 72 - 5 - i * 15
+									y: frame.parent.height - 72 - 5 - i * 15,
+									theme:
+										drawButton: (renderer) =>
+											if system.power >= i
+												renderer\setDrawColor 0x00FF00
+											else
+												renderer\setDrawColor 0xFF8800
+
+											renderer\fillRect self\rectangle!
 								}
 		}
 	}

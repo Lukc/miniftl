@@ -14,6 +14,7 @@ class
 		@rooms   = {}
 		@doors   = {}
 		@systems = {}
+		@crew    = {}
 
 		-- Sane default value.
 		@power   = 8
@@ -39,6 +40,10 @@ class
 
 		if level
 			system.level = level
+
+	addCrew: (crew, position) =>
+		@crew[#@crew+1] = crew
+		crew.position = position
 
 	finalize: () =>
 		width = 1
