@@ -1,6 +1,6 @@
 
---yui = require ".yui.init"
---SDL = require "SDL"
+yui = require ".yui.init"
+SDL = require "SDL"
 
 Ship = require "ship"
 Room = require "room"

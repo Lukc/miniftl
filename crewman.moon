@@ -18,7 +18,7 @@ class
 	gainExperience: (domain) =>
 		@experience[domain] += 1
 
-	move: destination =>
+	move: (destination) =>
 		@position = destination
 
 	pathfinding = (dijkstra, origin, destination, tiles) =>
