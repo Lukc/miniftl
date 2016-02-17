@@ -500,6 +500,15 @@ w = yui.Window {
 	}
 }
 
+testPosition =
+	x: 1
+	y: 6
+trajectory = test.crew[1]\pathfinding test.dijkstra, testPosition, test.tiles
+
+for traj in *trajectory
+	print traj.direction .. " " .. traj.tile.position.x .. " " .. traj.tile.position.y
+
+
 c = true
 while c do
 	c = yui\run {w}

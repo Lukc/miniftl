@@ -116,7 +116,7 @@ class
 					@dijkstra[#@dijkstra+1] = @tiles[i][j]
 					@dijkstra[#@dijkstra].weight = math.huge
 					@dijkstra[#@dijkstra].goTo
-					@dijkstra[#@dijkstra].process
+					@dijkstra[#@dijkstra].process = false
 		for tile in *@dijkstra
 			for link in *tile.links
 				if link.tile
