@@ -162,11 +162,15 @@ ShipView =
 				theme:
 					drawButton: (renderer) =>
 						if @hovered
-							renderer\setDrawColor 0x8888FF
-						elseif door.opened
-							renderer\setDrawColor 0xFF0000
+							if door.opened
+								renderer\setDrawColor 0xFF8888
+							else
+								renderer\setDrawColor 0xBBBBBB
 						else
-							renderer\setDrawColor 0x888888
+							if door.opened
+								renderer\setDrawColor 0xFF0000
+							else
+								renderer\setDrawColor 0x888888
 
 						renderer\drawRect self\rectangle!
 			}
