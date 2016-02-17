@@ -161,6 +161,9 @@ ShipView =
 							door.opened = not door.opened
 				theme:
 					drawButton: (renderer) =>
+						renderer\setDrawColor 0x000000
+						renderer\fillRect self\rectangle!
+
 						if @hovered
 							if door.opened
 								renderer\setDrawColor 0xFF8888
