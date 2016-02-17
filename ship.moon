@@ -17,7 +17,7 @@ class
 		@crew    = {}
 
 		-- Sane default value.
-		@power   = 8
+		@reactorLevel = 8
 
 		@maxHealth = 30
 		@health    = 30
@@ -47,6 +47,28 @@ class
 	addCrew: (crew, position) =>
 		@crew[#@crew+1] = crew
 		crew.position = position
+
+	power: (system) =>
+		powerUsed = 0
+		for sys in *@systems
+			powerUsed += sys.power
+
+		if system.powerMethod
+			system\powerMethod self, powerUsed
+		else
+			if system.power < system.level and powerUsed < @reactorLevel
+				system.power += 1
+
+				true
+
+	unpower: (system) =>
+		if system.unpowerMethod
+			system\unpowerMethod self
+		else
+			if system.power > 0
+				system.power -= 1
+
+				true
 
 	finalize: () =>
 		width = 1

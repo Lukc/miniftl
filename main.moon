@@ -50,7 +50,16 @@ with test
 
 	\addSystem (System "Engines"), test.rooms[1], 3
 	\addSystem (System "Weapons"), test.rooms[2], 2
-	\addSystem (System "Shields"), test.rooms[4], 2
+	\addSystem (System "Shields", {
+		powerMethod: (ship, powerUsed) =>
+			if powerUsed <= ship.reactorLevel - 2
+				@power += 2
+				true
+		unpowerMethod: (ship) =>
+			if @power > 0
+				@power -= 2
+				true
+	}), test.rooms[4], 4
 	\addSystem (System "Life Support"), test.rooms[5], 1
 
 	\addCrew (CrewMan {}, "Luke"), {x: test.rooms[3].position.x, y: test.rooms[3].position.y}
@@ -340,7 +349,7 @@ w = yui.Window {
 
 						self\addChild frame
 
-						for i = 1, test.power
+						for i = 1, test.reactorLevel
 							frame\addChild yui.Button {
 								width: 60,
 								height: 10,
@@ -352,7 +361,7 @@ w = yui.Window {
 										for system in *test.systems
 											totalPower += system.power
 
-										if test.power - totalPower >= i
+										if test.reactorLevel - totalPower >= i
 											renderer\setDrawColor 0x00FF00
 										else
 											renderer\setDrawColor 0xFF8800
@@ -379,11 +388,9 @@ w = yui.Window {
 									events:
 										click: (click) =>
 											if click == 1
-												if system.power < system.level
-													system.power = system.power + 1
+												test\power system
 											elseif click == 3
-												if system.power > 0
-													system.power = system.power - 1
+												test\unpower system
 							}
 
 							self\addChild frame
@@ -401,7 +408,7 @@ w = yui.Window {
 											else
 												renderer\setDrawColor 0xFF8800
 
-											renderer\fillRect self\rectangle!
+											renderer\fillRect @rectangle!
 								}
 		}
 	}
