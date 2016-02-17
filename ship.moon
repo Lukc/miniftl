@@ -15,6 +15,7 @@ class
 		@doors   = {}
 		@systems = {}
 		@crew    = {}
+		@weapons = {}
 
 		-- Sane default value.
 		@reactorLevel = 8
@@ -47,6 +48,9 @@ class
 	addCrew: (crew, position) =>
 		@crew[#@crew+1] = crew
 		crew.position = position
+
+	addWeapon: (weapon) =>
+		@weapons[#@weapons+1] = weapon
 
 	power: (system) =>
 		powerUsed = 0

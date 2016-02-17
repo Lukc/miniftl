@@ -6,6 +6,7 @@ Ship = require "ship"
 Room = require "room"
 System = require "system"
 CrewMan = require "crewman"
+Weapon = require "weapon"
 
 test = Ship!
 
@@ -49,10 +50,28 @@ with test
 	\addDoor {x: 5, y: 4}, "horizontal"
 
 	\addSystem (System "Engines"), test.rooms[1], 3
-	\addSystem (System "Weapons"), test.rooms[2], 2
+	\addSystem (System "Weapons", {
+		powerMethod: (ship, powerUsed) =>
+			for weapon in *ship.weapons
+				print weapon
+				if not weapon.powered
+					if powerUsed + weapon.power <= ship.reactorLevel
+						weapon.powered = true
+						@power += weapon.power
+						return true
+
+					return
+		unpowerMethod: (ship, powerUsed) =>
+			for i = #ship.weapons, 1, -1
+				weapon = ship.weapons[i]
+				if weapon.powered
+					weapon.powered = false
+					@power -= weapon.power
+					return true
+	}), test.rooms[2], 5
 	\addSystem (System "Shields", {
 		powerMethod: (ship, powerUsed) =>
-			if powerUsed <= ship.reactorLevel - 2
+			if powerUsed <= ship.reactorLevel - 2 and @power <= @level - 2
 				@power += 2
 				true
 		unpowerMethod: (ship) =>
@@ -66,7 +85,16 @@ with test
 
 	\addCrew (CrewMan {}, "Leia"), {x: test.rooms[4].position.x, y: test.rooms[4].position.y}
 
+	.reactorLevel = 14
+
 	\finalize!
+
+	\addWeapon Weapon
+		name: "Big Laser"
+		power: 3
+		shots: 3
+	\addWeapon Weapon
+		name: "Simple Laser"
 
 for room in *test.rooms
 	print room
@@ -347,7 +375,7 @@ w = yui.Window {
 				update: (dt) =>
 					if #@children == 0
 						frame = yui.Frame {
-							width: 100,
+							width: 70,
 							events:
 								update: (dt) =>
 									--self.y = self.parent.height - self.realHeight
@@ -358,10 +386,10 @@ w = yui.Window {
 
 						for i = 1, test.reactorLevel
 							frame\addChild yui.Button {
-								width: 60,
-								height: 10,
+								width: 40,
+								height: 5,
 								x: 10,
-								y: frame.parent.height - 72 - 5 - i * 15,
+								y: frame.parent.height - 48 - 5 - i * 8,
 								theme:
 									drawButton: (renderer) =>
 										totalPower = 0
@@ -378,7 +406,7 @@ w = yui.Window {
 
 						for system in *test.systems
 							frame = yui.Frame {
-								width: 80,
+								width: 60,
 								events:
 									update: (dt) =>
 										--self.y = self.parent.height - self.realHeight
@@ -388,10 +416,10 @@ w = yui.Window {
 									text: system.name
 								},
 								yui.Button
-									width: 72,
-									height: 72,
+									width: 48,
+									height: 48,
 									x: 5,
-									y: frame.parent.height - 72 - 5,
+									y: frame.parent.height - 48 - 5,
 									events:
 										click: (click) =>
 											if click == 1
@@ -404,10 +432,10 @@ w = yui.Window {
 
 							for i = 1, system.level
 								frame\addChild yui.Button {
-									width: 60,
-									height: 10,
+									width: 40,
+									height: 5,
 									x: 10,
-									y: frame.parent.height - 72 - 5 - i * 15,
+									y: frame.parent.height - 48 - 5 - i * 8,
 									theme:
 										drawButton: (renderer) =>
 											if system.power >= i
@@ -418,6 +446,57 @@ w = yui.Window {
 											renderer\fillRect @rectangle!
 								}
 		}
+	},
+	yui.Frame {
+		width: 400,
+		height: 100,
+		x: 1280 - 400 * 2 - 20 * 2,
+		y: 800 - 100 - 20,
+
+		events:
+			update: (dt) =>
+				if #@children == 0
+					offset = 0
+					for weapon in *test.weapons
+						self\addChild yui.Frame {
+							width: 130,
+							height: 100,
+							x: offset,
+
+							events:
+								click: (button) =>
+									if weapon.powered
+										weapon.powered = false
+
+										for system in *test.systems
+											if system.name == "Weapons"
+												system.power -= weapon.power
+												return
+									else
+										powerUsed = 0
+										for system in *test.systems
+											powerUsed += system.power
+
+										if powerUsed + weapon.power <= test.reactorLevel
+											weapon.powered = true
+
+											for system in *test.systems
+												if system.name == "Weapons"
+													system.power += weapon.power
+													return
+										else
+											print "Not enough power!"
+
+							yui.Label weapon.name
+						}
+
+						offset += 133
+	},
+	yui.Frame {
+		width: 400,
+		height: 100,
+		x: 1280 - 400 - 20,
+		y: 800 - 100 - 20
 	}
 }
 
