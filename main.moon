@@ -53,7 +53,9 @@ with test
 	\addSystem (System "Shields"), test.rooms[4], 2
 	\addSystem (System "Life Support"), test.rooms[5], 1
 
-	\addCrew (CrewMan "Bob"), {x: test.rooms[3].position.x, y: test.rooms[3].position.y}
+	\addCrew (CrewMan {}, "Luke"), {x: test.rooms[3].position.x, y: test.rooms[3].position.y}
+
+	\addCrew (CrewMan {}, "Leia"), {x: test.rooms[4].position.x, y: test.rooms[4].position.y}
 
 	\finalize!
 
@@ -113,6 +115,7 @@ ShipView =
 			error "no opts.ship!"
 
 		self.ship = opts.ship
+		self.rotated = opts.rotated or false
 
 		for door in *@ship.doors
 			{:x, :y} = door.position
@@ -120,44 +123,64 @@ ShipView =
 			local rect
 			if door.type == "horizontal"
 				rect =
-					x: self.realX + x * 48 + 8,
-					y: self.realY + (y + 1) * 48 - 6,
+					x: x * 48 + 8,
+					y: (y + 1) * 48 - 6,
 					w: 48 - 2 * 8,
 					h: 12
 			else
 				rect =
-					x: self.realX + (x + 1) * 48 - 6,
-					y: self.realY + y * 48 + 8,
+					x: (x + 1) * 48 - 6,
+					y: y * 48 + 8,
 					w: 12,
 					h: 48 - 2 * 8
+
+			if @rotated
+				rect.x, rect.y = rect.y, rect.x
+				rect.w, rect.h = rect.h, rect.w
+
+			rect.x += @realX
+			rect.y += @realY
 
 			yui.Widget.addChild self, yui.Button {
 				x: rect.x,
 				y: rect.y,
 				width: rect.w,
 				height: rect.h,
+				events:
+					click: (button) =>
+						if button == 1
+							door.opened = not door.opened
 				theme:
 					drawButton: (renderer) =>
 						if @hovered
 							renderer\setDrawColor 0x8888FF
+						elseif door.opened
+							renderer\setDrawColor 0xFF0000
 						else
 							renderer\setDrawColor 0x888888
+
 						renderer\drawRect self\rectangle!
 			}
 
 	draw: (renderer) =>
 		renderer\setDrawColor 0xFF8800
-		renderer\drawRect (self\rectangle!)
+		renderer\drawRect @rectangle!
 
 		for room in *@ship.rooms
 			{:x, :y} = room.position
 
-			rect = {
-				x: self.realX + x * 48,
-				y: self.realY + y * 48,
+			rect =
+				x: x * 48,
+				y: y * 48,
 				w: 48 * room.width,
 				h: 48 * room.height
-			}
+
+			if @rotated
+				rect.x, rect.y = rect.y, rect.x
+				rect.w, rect.h = rect.h, rect.w
+
+			rect.x += @realX
+			rect.y += @realY
 
 			if room.system
 				renderer\setDrawColor 0x00FFFF
@@ -168,11 +191,18 @@ ShipView =
 
 		for crew in *@ship.crew
 			rect = {
-				x: self.realX + crew.position.x * 48 + 8,
-				y: self.realY + crew.position.y * 48 + 8,
+				x: crew.position.x * 48 + 8,
+				y: crew.position.y * 48 + 8,
 				w: 32,
 				h: 32
 			}
+
+			if @rotated
+				rect.x, rect.y = rect.y, rect.x
+				rect.w, rect.h = rect.h, rect.w
+
+			rect.x += @realX
+			rect.y += @realY
 
 			renderer\setDrawColor 0x00FF88
 			renderer\drawRect rect
@@ -180,6 +210,38 @@ ShipView =
 		yui.Widget.draw self, renderer
 
 ShipView = yui.Object ShipView, yui.Widget
+
+CrewView =
+	new: (opts) =>
+		unless opts.height
+			opts.height = 52
+
+		yui.Widget.new self, opts
+
+		unless opts.crew
+			error "no opts.crew!"
+
+		@crew = opts.crew
+
+		yui.Widget.addChild self, yui.Label {
+			text: tostring @crew.name,
+			x: 50
+		}
+
+	draw: (renderer) =>
+		yui.Widget.draw self, renderer
+
+		renderer\setDrawColor 0xFFFFFF
+		renderer\drawRect @rectangle!
+
+		renderer\setDrawColor 0x44FF88
+		renderer\fillRect
+			x: @realX + 50,
+			y: @realY + 25,
+			w: @crew.health / @crew.maxHealth * (@realWidth - 50 - 10),
+			h: 10
+
+CrewView = yui.Object CrewView, yui.Widget
 
 yui.init!
 
@@ -210,9 +272,10 @@ w = yui.Window {
 	ShipView {
 		x: 760,
 		y: 300,
-		width: 600,
-		height: 400,
-		ship: test
+		width: 400,
+		height: 600,
+		ship: test,
+		rotated: true
 	},
 
 	yui.Column {
@@ -227,6 +290,23 @@ w = yui.Window {
 				update: (dt) =>
 					root = self\getRoot!
 					self.realWidth = root.width
+			yui.Frame {
+				width: 12 * 32,
+				height: 24 + 20 + 4,
+				theme:
+					drawFrame: (renderer) =>
+						renderer\setDrawColor 0x44FF88
+
+						renderer\drawRect @rectangle!
+
+						for i = 1, test.maxHealth
+							renderer\drawRect {
+								x: i * 12,
+								y: 24,
+								w: 10,
+								h: 20
+							}
+			}
 		},
 		yui.Row {
 			width: 160,
@@ -242,9 +322,7 @@ w = yui.Window {
 					update: (dt) =>
 						self.realWidth = self.parent.realWidth
 
-				unpack [(yui.Button {
-					height: 52
-				}) for i = 1, 8]
+				unpack [(CrewView crew: crew) for crew in *test.crew]
 			}
 		},
 		yui.Row {

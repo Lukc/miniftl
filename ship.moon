@@ -19,6 +19,9 @@ class
 		-- Sane default value.
 		@power   = 8
 
+		@maxHealth = 30
+		@health    = 30
+
 	addRoom: (room, to) =>
 		@rooms[#@rooms+1] = room
 

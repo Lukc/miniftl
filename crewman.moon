@@ -1,8 +1,9 @@
 
 class
-	new: (species) =>
-		@health = species.health or 100
-		@name = "unnamed person"
+	new: (species, name) =>
+		@maxHealth = species.health or 100
+		@health    = species.health or 100
+		@name = name or "unnamed person"
 		@position =
 			x: 0
 			y: 0
