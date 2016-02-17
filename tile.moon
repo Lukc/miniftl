@@ -6,7 +6,7 @@ class
 		@air = 100
 		@links ={}
 		@position =
-			x: x
+			x: x,
 			y: y
 		
 	addLink: (tile, door, direction) =>

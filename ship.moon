@@ -73,4 +73,17 @@ class
 
 			if door.type == "horizontal" and tile
 				tile\addLink @tiles[door.position.x][door.position.y+1], door, "down"
-
+		
+		@dijkstra = {}
+		for i = 1, @tiles.width
+			for j = 1, @tiles.height
+				if @tiles[i][j]
+					@tiles[i][j].posInDijkstra = #@dijkstra+1
+					@dijkstra[#@dijkstra+1] = @tiles[i][j]
+					@dijkstra[#@dijkstra].weight = math.huge
+					@dijkstra[#@dijkstra].goTo
+					@dijkstra[#@dijkstra].process
+		for tile in *@dijkstra
+			for link in *tile.links
+				if link.tile
+					link.tile = @dijkstra[link.tile.posInDijkstra]
