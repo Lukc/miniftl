@@ -26,6 +26,39 @@ class
 		@shieldsProgress = 0
 		@shields = 0
 
+	clone: =>
+		n = @@ @name
+
+		n.scrap    = @scrap
+		n.missiles = @missiles
+		n.fuel     = @fuel
+		n.parts    = @parts
+
+		for room in *@rooms
+			n\addRoom room\clone!, {x: room.position.x, y: room.position.y}
+
+		for door in *@doors
+			n\addDoor {x: door.position.x, y: door.position.y}, door.type
+
+		for system in *@systems
+			n\addSystem system\clone!,
+				(n.getRoomByCoordinates n,
+					system.room.position.x,
+					system.room.position.y
+				), system.level
+
+		for crew in *@crew
+			n\addCrew crew\clone!
+
+		n.reactorLevel = @reactorLevel
+
+		n.maxHealth = @maxHealth
+		n.health    = @health
+
+		n.shields = 0
+
+		n
+
 	addRoom: (room, to) =>
 		@rooms[#@rooms+1] = room
 
@@ -84,6 +117,13 @@ class
 
 		return 0
 
+	getRoomByCoordinates: (x, y) =>
+		print ">", x, ":", y
+		for room in *@rooms
+			print room.position.x, ":", room.position.y
+			if room.position.x == x and room.position.y == y
+				return room
+
 	finalize: () =>
 		width = 1
 		height = 1
@@ -130,6 +170,8 @@ class
 				if @tiles[door.position.x][door.position.y+1]
 					@dijkstra[tile.posInDijkstra]\addLink @dijkstra[@tiles[door.position.x][door.position.y+1].posInDijkstra], door, "down"
 
+		self
+
 	update: (dt) =>
 		maxShields = self\getMaxShields!
 
@@ -152,6 +194,9 @@ class
 				@shieldsProgress -= @@shieldsChargeTime
 			else
 				@shieldsProgress = 0
+
+	__tostring: =>
+		"<Ship: #{@name}>"
 
 	shieldsChargeTime: 2000
 

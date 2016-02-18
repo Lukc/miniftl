@@ -2,6 +2,9 @@
 System = require "system"
 
 {
+	bridge: System "Bridge", {
+		powerless: true
+	},
 	engines: System "Engines",
 
 	weapons: System "Weapons", {

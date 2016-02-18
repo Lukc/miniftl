@@ -18,10 +18,12 @@ ReactorView = require "widgets.reactorview"
 
 -- Game data.
 systems = require "data.systems"
+ships = require "data.ships"
 
-test = Ship!
+player = Ship!
+enemy = ships.raider\clone!\finalize!
 
-with test
+with player
 	\addRoom (Room 2, 1), {x: 1, y: 1}
 	\addRoom (Room 2, 1), {x: 3, y: 1}
 	\addRoom (Room 2, 2), {x: 3, y: 3}
@@ -60,14 +62,14 @@ with test
 	\addDoor {x: 5, y: 2}, "horizontal"
 	\addDoor {x: 5, y: 4}, "horizontal"
 
-	\addSystem systems.engines, test.rooms[1], 3
-	\addSystem systems.weapons, test.rooms[2], 5
-	\addSystem systems.shields, test.rooms[4], 4
-	\addSystem systems.lifeSupport, test.rooms[5], 1
+	\addSystem systems.engines, player.rooms[1], 3
+	\addSystem systems.weapons, player.rooms[2], 5
+	\addSystem systems.shields, player.rooms[4], 4
+	\addSystem systems.lifeSupport, player.rooms[5], 1
 
-	\addCrew (CrewMan {}, "Luke"), {x: test.rooms[3].position.x, y: test.rooms[3].position.y}
+	\addCrew (CrewMan {}, "Luke"), {x: player.rooms[3].position.x, y: player.rooms[3].position.y}
 
-	\addCrew (CrewMan {}, "Leia"), {x: test.rooms[4].position.x, y: test.rooms[4].position.y}
+	\addCrew (CrewMan {}, "Leia"), {x: player.rooms[4].position.x, y: player.rooms[4].position.y}
 
 	.reactorLevel = 14
 
@@ -80,13 +82,13 @@ with test
 	\addWeapon Weapon
 		name: "Simple Laser"
 
-for room in *test.rooms
+for room in *player.rooms
 	print room
 
 	if room.system
 		print "", room.system
 
-cli.dump test
+cli.dump player
 
 yui.init!
 
@@ -99,7 +101,7 @@ w = yui.Window {
 
 	events:
 		update: (dt) =>
-			test\update dt
+			player\update dt
 
 	theme:
 		drawRow: (r) =>
@@ -115,7 +117,7 @@ w = yui.Window {
 		y: 100,
 		width: 600,
 		height: 400,
-		ship: test
+		ship: player
 	},
 
 	ShipView {
@@ -123,7 +125,7 @@ w = yui.Window {
 		y: 100,
 		width: 400,
 		height: 600,
-		ship: test,
+		ship: enemy,
 		rotated: true
 	},
 
@@ -148,7 +150,7 @@ w = yui.Window {
 
 						renderer\drawRect @rectangle!
 
-						for i = 1, test.maxHealth
+						for i = 1, player.maxHealth
 							renderer\drawRect {
 								x: i * 12,
 								y: 24,
@@ -163,11 +165,11 @@ w = yui.Window {
 				height: 43,
 				theme:
 					drawFrame: (renderer) =>
-						maxShields = test\getMaxShields!
+						maxShields = player\getMaxShields!
 
 						renderer\setDrawColor 0x0088FF
 
-						for i = 1, test.shields
+						for i = 1, player.shields
 							renderer\drawRect
 								x: (i - 1) * 45,
 								y: 53,
@@ -176,7 +178,7 @@ w = yui.Window {
 
 						renderer\setDrawColor 0x004488
 
-						for i = test.shields + 1, maxShields
+						for i = player.shields + 1, maxShields
 							renderer\drawRect
 								x: (i - 1) * 45,
 								y: 53,
@@ -186,7 +188,7 @@ w = yui.Window {
 						renderer\drawRect
 							x: 5 * 45,
 							y: 53,
-							w: math.floor math.floor (test.shieldsProgress / Ship.shieldsChargeTime) * 120,
+							w: math.floor math.floor (player.shieldsProgress / Ship.shieldsChargeTime) * 120,
 							h: 20
 			}
 		},
@@ -204,7 +206,7 @@ w = yui.Window {
 					update: (dt) =>
 						self.realWidth = self.parent.realWidth
 
-				unpack [(CrewView crew: crew) for crew in *test.crew]
+				unpack [(CrewView crew: crew) for crew in *player.crew]
 			}
 		},
 		yui.Row {
@@ -212,10 +214,10 @@ w = yui.Window {
 			events:
 				update: (dt) =>
 					if #@children == 0
-						self\addChild ReactorView test
+						self\addChild ReactorView player
 
-						for system in *test.systems
-							self\addChild SystemView system, test, frame
+						for system in *player.systems
+							self\addChild SystemView system, player, frame
 		}
 	},
 	yui.Frame {
@@ -228,7 +230,7 @@ w = yui.Window {
 			update: (dt) =>
 				if #@children == 0
 					offset = 0
-					for weapon in *test.weapons
+					for weapon in *player.weapons
 						self\addChild yui.Frame {
 							width: 130,
 							height: 100,
@@ -239,19 +241,19 @@ w = yui.Window {
 									if weapon.powered
 										weapon.powered = false
 
-										for system in *test.systems
+										for system in *player.systems
 											if system.name == "Weapons"
 												system.power -= weapon.power
 												return
 									else
 										powerUsed = 0
-										for system in *test.systems
+										for system in *player.systems
 											powerUsed += system.power
 
-										if powerUsed + weapon.power <= test.reactorLevel
+										if powerUsed + weapon.power <= player.reactorLevel
 											weapon.powered = true
 
-											for system in *test.systems
+											for system in *player.systems
 												if system.name == "Weapons"
 													system.power += weapon.power
 													return
@@ -282,10 +284,10 @@ w = yui.Window {
 	}
 }
 
-testPosition =
+playerPosition =
 	x: 8
 	y: 3
-trajectory = test.crew[2]\pathfinding test.dijkstra, testPosition, test.tiles
+trajectory = player.crew[2]\pathfinding player.dijkstra, playerPosition, player.tiles
 if trajectory
 	for traj in *trajectory
 		print traj.direction .. " " .. traj.tile.position.x .. " " .. traj.tile.position.y

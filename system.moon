@@ -15,10 +15,15 @@ class
 
 		n.level = @level
 
+		-- Exotic powering methods. Like shields or weapons.
 		n.powerMethod   = @powerMethod
 		n.unpowerMethod = @unpowerMethod
 
+		-- Special characteristics taken care of internally, like shields.
 		n.special = @special
+
+		-- Does not use power to work.
+		n.powerless = @powerless
 
 		return n
 
