@@ -74,6 +74,7 @@ class
 		width = 1
 		height = 1
 		@tiles = {}
+		@dijkstra = {}
 		for room in *@rooms
 			for j = 0,room.height-1
 				height = height +1
@@ -81,17 +82,25 @@ class
 					x = room.position.x + i
 					y = room.position.y + j
 					tempTile = Tile x, y
+					tempTile.posInDijkstra = #@dijkstra+1
 					unless @tiles[x]
 						@tiles[x] = {}
 					@tiles[x][y] = tempTile
+					@dijkstra[#@dijkstra+1] = tempTile
+					@dijkstra[#@dijkstra].weight = math.huge
+					@dijkstra[#@dijkstra].goTo
+					@dijkstra[#@dijkstra].process = false
 					if x > width
 						width = x
 					
 					unless x == room.position.x
 						@tiles[x][y]\addLink @tiles[x-1][y], nil, "left"
+						@dijkstra[@tiles[x][y].posInDijkstra]\addLink @dijkstra[@tiles[x-1][y].posInDijkstra], nil, "left"
 					
 					unless y == room.position.y
 						@tiles[x][y]\addLink @tiles[x][y-1], nil, "up"
+						@dijkstra[@tiles[x][y].posInDijkstra]\addLink @dijkstra[@tiles[x][y-1].posInDijkstra], nil, "up"
+
 		@tiles.width = width
 		@tiles.height = height
 
@@ -100,20 +109,10 @@ class
 
 			if door.type == "vertical" and tile
 				tile\addLink @tiles[door.position.x+1][door.position.y], door, "right"
-
+				if @tiles[door.position.x+1][door.position.y]
+					@dijkstra[tile.posInDijkstra]\addLink @dijkstra[@tiles[door.position.x+1][door.position.y].posInDijkstra], door, "right"
 			if door.type == "horizontal" and tile
 				tile\addLink @tiles[door.position.x][door.position.y+1], door, "down"
-		
-		@dijkstra = {}
-		for i = 1, @tiles.width
-			for j = 1, @tiles.height
-				if @tiles[i][j]
-					@tiles[i][j].posInDijkstra = #@dijkstra+1
-					@dijkstra[#@dijkstra+1] = @tiles[i][j]
-					@dijkstra[#@dijkstra].weight = math.huge
-					@dijkstra[#@dijkstra].goTo
-					@dijkstra[#@dijkstra].process = false
-		for tile in *@dijkstra
-			for link in *tile.links
-				if link.tile
-					link.tile = @dijkstra[link.tile.posInDijkstra]
+				if @tiles[door.position.x][door.position.y+1]
+					@dijkstra[tile.posInDijkstra]\addLink @dijkstra[@tiles[door.position.x][door.position.y+1].posInDijkstra], door, "down"
+			

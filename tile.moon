@@ -16,18 +16,20 @@ class
 			door: door
 		}
 		
+		local direction2
 		if tile
-			if self.links[#@links].direction == "up"
-				direction = "down"
-			elseif self.links[#@links].direction == "down"
-				direction = "up"
-			elseif self.links[#@links].direction == "right"
-				direction = "left"
-			else
-				direction = "right"
+			switch direction
+				when "up"
+					direction2 = "down"
+				when "down"
+					direction2 = "up"
+				when "right"
+					direction2 = "left" 
+				when "left"
+					direction2 = "right"
 			
 			tile.links[#tile.links+1] = {
-				direction: direction,
+				direction: direction2,
 				tile: self,
 				door: door
 			}

@@ -28,38 +28,44 @@ class
 			dijkstra[destInd].weight = 0
 			dijkstra[destInd].goTo = "arrived"
 			i = destInd
+			print dijkstra[i].goTo .. " " .. dijkstra[i].position.x .. " " .. dijkstra[i].position.y
 			while i != origInd
 				for link in *dijkstra[i].links
-					unless link.tile.process
-						if link.tile.weight > dijkstra[i].weight+1
+					if link.tile
+						if link.tile.weight > dijkstra[i].weight+1 and not link.tile.process
 							link.tile.weight = dijkstra[i].weight+1
-							print link.direction .. " " .. link.tile.position.x .. " " .. link.tile.position.y
-							switch link.direction
-								when "right" then link.tile.goTo = "left"
-								when "left" then link.tile.goTo = "right"
-								when "up" then link.tile.goTo = "down"
-								when "down" then link.tile.goTo = "up"
+							if dijkstra[i].position.x < link.tile.position.x
+								link.tile.goTo = "left"
+							elseif dijkstra[i].position.x > link.tile.position.x
+								link.tile.goTo = "right"
+							elseif dijkstra[i].position.y < link.tile.position.y
+								link.tile.goTo = "up"
+							elseif dijkstra[i].position.y > link.tile.position.y
+								link.tile.goTo = "down"
+							print link.tile.goTo .. " " .. link.tile.position.x .. " " .. link.tile.position.y
 				dijkstra[i].process = true
 				i = origInd
 				for j = 1, #dijkstra
 					if dijkstra[j].weight < dijkstra[i].weight and not dijkstra[j].process
 						i = j
-				if i == origInd
+				if i == origInd and dijkstra[origInd].weight == math.huge
 					return nil
 			trajectory = {}
 			trajectory[1] =
 				tile: dijkstra[origInd]
 				direction: dijkstra[origInd].goTo
 			tile = dijkstra[origInd]
-			while tile.position.x != destination.x and tile.position.y != destination.y
+			while tile.position.x != destination.x or tile.position.y != destination.y
 				stop = false
 				i = 1
-				while tile.link[i] and not stop
-					if tile.link[i].direction == tile.goTo
-						tile = tile.link[i].tile
+				while tile.links[i] and not stop
+					if tile.links[i].direction == tile.goTo
+						tile = tile.links[i].tile
 						stop = true
 					i+=1
+				if stop then print "true"
 				unless stop
+					print "false"
 					error "there is no such a direction"
 				trajectory[#trajectory+1] =
 					tile: tile

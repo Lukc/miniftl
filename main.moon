@@ -422,13 +422,13 @@ w = yui.Window {
 }
 
 testPosition =
-	x: 1
-	y: 6
-trajectory = test.crew[1]\pathfinding test.dijkstra, testPosition, test.tiles
-
-for traj in *trajectory
-	print traj.direction .. " " .. traj.tile.position.x .. " " .. traj.tile.position.y
-
+	x: 8
+	y: 3
+trajectory = test.crew[2]\pathfinding test.dijkstra, testPosition, test.tiles
+if trajectory
+	for traj in *trajectory
+		print traj.direction .. " " .. traj.tile.position.x .. " " .. traj.tile.position.y
+else print "Destination unreachable"
 
 c = true
 while c do
