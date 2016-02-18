@@ -133,6 +133,9 @@ class
 	update: (dt) =>
 		maxShields = self\getMaxShields!
 
+		for weapon in *@weapons
+			weapon\update dt
+
 		if @shields == maxShields
 			return
 

@@ -258,6 +258,17 @@ w = yui.Window {
 										else
 											print "Not enough power!"
 
+							theme:
+								drawFrame: (renderer) =>
+									renderer\setDrawColor 0x888888
+									renderer\drawRect @rectangle!
+
+									renderer\drawRect
+										x: @realX + 5,
+										y: @realY + 40,
+										w: 100 * (weapon.charge / weapon.chargeTime),
+										h: 10
+
 							yui.Label weapon.name
 						}
 
