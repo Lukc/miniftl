@@ -23,6 +23,9 @@ class
 		@maxHealth = 30
 		@health    = 30
 
+		@shieldsProgress = 0
+		@shields = 0
+
 	addRoom: (room, to) =>
 		@rooms[#@rooms+1] = room
 
@@ -74,6 +77,13 @@ class
 
 				true
 
+	getMaxShields: =>
+		for system in *@systems
+			if system.special == "shields"
+				return (system.power - system.power % 2) / 2
+
+		return 0
+
 	finalize: () =>
 		width = 1
 		height = 1
@@ -119,4 +129,26 @@ class
 				tile\addLink @tiles[door.position.x][door.position.y+1], door, "down"
 				if @tiles[door.position.x][door.position.y+1]
 					@dijkstra[tile.posInDijkstra]\addLink @dijkstra[@tiles[door.position.x][door.position.y+1].posInDijkstra], door, "down"
-			
+
+	update: (dt) =>
+		maxShields = self\getMaxShields!
+
+		if @shields == maxShields
+			return
+
+		if @shields > maxShields
+			@shields = maxShields
+			return
+
+		@shieldsProgress += dt
+
+		if @shieldsProgress >= @@shieldsChargeTime
+			@shields += 1
+
+			if @shields < maxShields
+				@shieldsProgress -= @@shieldsChargeTime
+			else
+				@shieldsProgress = 0
+
+	shieldsChargeTime: 2000
+

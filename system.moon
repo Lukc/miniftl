@@ -18,6 +18,8 @@ class
 		n.powerMethod   = @powerMethod
 		n.unpowerMethod = @unpowerMethod
 
+		n.special = @special
+
 		return n
 
 	__tostring: =>

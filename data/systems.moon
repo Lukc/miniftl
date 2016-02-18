@@ -32,6 +32,7 @@ System = require "system"
 			if @power > 0
 				@power -= 2
 				true
+		special: "shields"
 	},
 
 	lifeSupport: System "Life Support",

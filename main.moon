@@ -97,6 +97,10 @@ w = yui.Window {
 	height: 800,
 	--flags: {SDL.window.Resizable},
 
+	events:
+		update: (dt) =>
+			test\update dt
+
 	theme:
 		drawRow: (r) =>
 			if @hovered
@@ -151,6 +155,39 @@ w = yui.Window {
 								w: 10,
 								h: 20
 							}
+			},
+			yui.Frame {
+				x: 10,
+				y: 51,
+				width: 45 * 4,
+				height: 43,
+				theme:
+					drawFrame: (renderer) =>
+						maxShields = test\getMaxShields!
+
+						renderer\setDrawColor 0x0088FF
+
+						for i = 1, test.shields
+							renderer\drawRect
+								x: (i - 1) * 45,
+								y: 53,
+								w: 40,
+								h: 40
+
+						renderer\setDrawColor 0x004488
+
+						for i = test.shields + 1, maxShields
+							renderer\drawRect
+								x: (i - 1) * 45,
+								y: 53,
+								w: 40,
+								h: 40
+
+						renderer\drawRect
+							x: 5 * 45,
+							y: 53,
+							w: math.floor math.floor (test.shieldsProgress / Ship.shieldsChargeTime) * 120,
+							h: 20
 			}
 		},
 		yui.Row {
