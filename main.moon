@@ -60,10 +60,10 @@ with test
 	\addDoor {x: 5, y: 2}, "horizontal"
 	\addDoor {x: 5, y: 4}, "horizontal"
 
-	\addSystem systems.engines\clone!, test.rooms[1], 3
-	\addSystem systems.weapons\clone!, test.rooms[2], 5
-	\addSystem systems.shields\clone!, test.rooms[4], 4
-	\addSystem systems.lifeSupport\clone!, test.rooms[5], 1
+	\addSystem systems.engines, test.rooms[1], 3
+	\addSystem systems.weapons, test.rooms[2], 5
+	\addSystem systems.shields, test.rooms[4], 4
+	\addSystem systems.lifeSupport, test.rooms[5], 1
 
 	\addCrew (CrewMan {}, "Luke"), {x: test.rooms[3].position.x, y: test.rooms[3].position.y}
 
