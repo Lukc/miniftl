@@ -16,6 +16,9 @@ CrewView = require "widgets.crewview"
 SystemView = require "widgets.systemview"
 ReactorView = require "widgets.reactorview"
 
+-- Game data.
+systems = require "data.systems"
+
 test = Ship!
 
 with test
@@ -57,37 +60,10 @@ with test
 	\addDoor {x: 5, y: 2}, "horizontal"
 	\addDoor {x: 5, y: 4}, "horizontal"
 
-	\addSystem (System "Engines"), test.rooms[1], 3
-	\addSystem (System "Weapons", {
-		powerMethod: (ship, powerUsed) =>
-			for weapon in *ship.weapons
-				print weapon
-				if not weapon.powered
-					if powerUsed + weapon.power <= ship.reactorLevel
-						weapon.powered = true
-						@power += weapon.power
-						return true
-
-					return
-		unpowerMethod: (ship, powerUsed) =>
-			for i = #ship.weapons, 1, -1
-				weapon = ship.weapons[i]
-				if weapon.powered
-					weapon.powered = false
-					@power -= weapon.power
-					return true
-	}), test.rooms[2], 5
-	\addSystem (System "Shields", {
-		powerMethod: (ship, powerUsed) =>
-			if powerUsed <= ship.reactorLevel - 2 and @power <= @level - 2
-				@power += 2
-				true
-		unpowerMethod: (ship) =>
-			if @power > 0
-				@power -= 2
-				true
-	}), test.rooms[4], 4
-	\addSystem (System "Life Support"), test.rooms[5], 1
+	\addSystem systems.engines\clone!, test.rooms[1], 3
+	\addSystem systems.weapons\clone!, test.rooms[2], 5
+	\addSystem systems.shields\clone!, test.rooms[4], 4
+	\addSystem systems.lifeSupport\clone!, test.rooms[5], 1
 
 	\addCrew (CrewMan {}, "Luke"), {x: test.rooms[3].position.x, y: test.rooms[3].position.y}
 
@@ -258,13 +234,14 @@ w = yui.Window {
 	}
 }
 
---testPosition =
---	x: 1
---	y: 6
---trajectory = test.crew[1]\pathfinding test.dijkstra, testPosition, test.tiles
-
---for traj in *trajectory
---	print traj.direction .. " " .. traj.tile.position.x .. " " .. traj.tile.position.y
+testPosition =
+	x: 8
+	y: 3
+trajectory = test.crew[2]\pathfinding test.dijkstra, testPosition, test.tiles
+if trajectory
+	for traj in *trajectory
+		print traj.direction .. " " .. traj.tile.position.x .. " " .. traj.tile.position.y
+else print "Destination unreachable"
 
 c = true
 while c do
