@@ -8,6 +8,14 @@ System = require "system"
 CrewMan = require "crewman"
 Weapon = require "weapon"
 
+cli = require "cli"
+
+-- Custom widgets.
+ShipView = require "widgets.shipview"
+CrewView = require "widgets.crewview"
+SystemView = require "widgets.systemview"
+ReactorView = require "widgets.reactorview"
+
 test = Ship!
 
 with test
@@ -102,190 +110,7 @@ for room in *test.rooms
 	if room.system
 		print "", room.system
 
-buffer = [{} for i = 1, 24]
-for j = 1, 24
-	for i = 1, 80
-		buffer[j][i] = " "
-
-for j = 1, test.tiles.height
-	for i = 1, test.tiles.width
-		tile = test.tiles[i][j]
-		if tile
-			buffer[j*2-1][i*2] = "-"
-			buffer[j*2+1][i*2] = "-"
-			buffer[j*2][i*2+1] = "|"
-			buffer[j*2][i*2-1] = "|"
-			buffer[j*2][i*2] = "0"
-			for h = 1, 4
-				if tile.links[h]
-					if tile.links[h].direction == "up"
-						if tile.links[h].door
-							buffer[j*2-1][i*2] = "~"
-						else
-							buffer[j*2-1][i*2] = " "
-					elseif tile.links[h].direction == "right"
-						if tile.links[h].door
-							buffer[j*2][i*2+1] = "/"
-						else
-							buffer[j*2][i*2+1] = " "
-					elseif tile.links[h].direction == "down"
-						if tile.links[h].door
-							buffer[j*2+1][i*2] = "~"
-						else
-							buffer[j*2+1][i*2] = " "
-					elseif tile.links[h].direction == "left"
-						if tile.links[h].door
-							buffer[j*2][i*2-1] = "/"
-						else
-							buffer[j*2][i*2-1] = " "
-
-for line in *buffer
-	for char in *line
-		io.write char
-	io.write "\n"
-
-ShipView =
-	new: (opts) =>
-		yui.Widget.new self, opts
-
-		unless opts.ship
-			error "no opts.ship!"
-
-		self.ship = opts.ship
-		self.rotated = opts.rotated or false
-
-		for door in *@ship.doors
-			{:x, :y} = door.position
-
-			local rect
-			if door.type == "horizontal"
-				rect =
-					x: x * 48 + 8,
-					y: (y + 1) * 48 - 6,
-					w: 48 - 2 * 8,
-					h: 12
-			else
-				rect =
-					x: (x + 1) * 48 - 6,
-					y: y * 48 + 8,
-					w: 12,
-					h: 48 - 2 * 8
-
-			if @rotated
-				rect.x, rect.y = rect.y, rect.x
-				rect.w, rect.h = rect.h, rect.w
-
-			rect.x += @realX
-			rect.y += @realY
-
-			yui.Widget.addChild self, yui.Button {
-				x: rect.x,
-				y: rect.y,
-				width: rect.w,
-				height: rect.h,
-				events:
-					click: (button) =>
-						if button == 1
-							door.opened = not door.opened
-				theme:
-					drawButton: (renderer) =>
-						renderer\setDrawColor 0x000000
-						renderer\fillRect self\rectangle!
-
-						if @hovered
-							if door.opened
-								renderer\setDrawColor 0xFF8888
-							else
-								renderer\setDrawColor 0xBBBBBB
-						else
-							if door.opened
-								renderer\setDrawColor 0xFF0000
-							else
-								renderer\setDrawColor 0x888888
-
-						renderer\drawRect self\rectangle!
-			}
-
-	draw: (renderer) =>
-		renderer\setDrawColor 0xFF8800
-		renderer\drawRect @rectangle!
-
-		for room in *@ship.rooms
-			{:x, :y} = room.position
-
-			rect =
-				x: x * 48,
-				y: y * 48,
-				w: 48 * room.width,
-				h: 48 * room.height
-
-			if @rotated
-				rect.x, rect.y = rect.y, rect.x
-				rect.w, rect.h = rect.h, rect.w
-
-			rect.x += @realX
-			rect.y += @realY
-
-			if room.system
-				renderer\setDrawColor 0x00FFFF
-			else
-				renderer\setDrawColor 0xFFFFFF
-
-			renderer\drawRect rect
-
-		for crew in *@ship.crew
-			rect = {
-				x: crew.position.x * 48 + 8,
-				y: crew.position.y * 48 + 8,
-				w: 32,
-				h: 32
-			}
-
-			if @rotated
-				rect.x, rect.y = rect.y, rect.x
-				rect.w, rect.h = rect.h, rect.w
-
-			rect.x += @realX
-			rect.y += @realY
-
-			renderer\setDrawColor 0x00FF88
-			renderer\drawRect rect
-
-		yui.Widget.draw self, renderer
-
-ShipView = yui.Object ShipView, yui.Widget
-
-CrewView =
-	new: (opts) =>
-		unless opts.height
-			opts.height = 52
-
-		yui.Widget.new self, opts
-
-		unless opts.crew
-			error "no opts.crew!"
-
-		@crew = opts.crew
-
-		yui.Widget.addChild self, yui.Label {
-			text: tostring @crew.name,
-			x: 50
-		}
-
-	draw: (renderer) =>
-		yui.Widget.draw self, renderer
-
-		renderer\setDrawColor 0xFFFFFF
-		renderer\drawRect @rectangle!
-
-		renderer\setDrawColor 0x44FF88
-		renderer\fillRect
-			x: @realX + 50,
-			y: @realY + 25,
-			w: @crew.health / @crew.maxHealth * (@realWidth - 50 - 10),
-			h: 10
-
-CrewView = yui.Object CrewView, yui.Widget
+cli.dump test
 
 yui.init!
 
@@ -374,77 +199,10 @@ w = yui.Window {
 			events:
 				update: (dt) =>
 					if #@children == 0
-						frame = yui.Frame {
-							width: 70,
-							events:
-								update: (dt) =>
-									--self.y = self.parent.height - self.realHeight
-									self.realHeight = self.parent.height
-						}
-
-						self\addChild frame
-
-						for i = 1, test.reactorLevel
-							frame\addChild yui.Button {
-								width: 40,
-								height: 5,
-								x: 10,
-								y: frame.parent.height - 48 - 5 - i * 8,
-								theme:
-									drawButton: (renderer) =>
-										totalPower = 0
-										for system in *test.systems
-											totalPower += system.power
-
-										if test.reactorLevel - totalPower >= i
-											renderer\setDrawColor 0x00FF00
-										else
-											renderer\setDrawColor 0xFF8800
-
-										renderer\fillRect self\rectangle!
-							}
+						self\addChild ReactorView test
 
 						for system in *test.systems
-							frame = yui.Frame {
-								width: 60,
-								events:
-									update: (dt) =>
-										--self.y = self.parent.height - self.realHeight
-										self.realHeight = self.parent.height
-
-								yui.Label {
-									text: system.name
-								},
-								yui.Button
-									width: 48,
-									height: 48,
-									x: 5,
-									y: frame.parent.height - 48 - 5,
-									events:
-										click: (click) =>
-											if click == 1
-												test\power system
-											elseif click == 3
-												test\unpower system
-							}
-
-							self\addChild frame
-
-							for i = 1, system.level
-								frame\addChild yui.Button {
-									width: 40,
-									height: 5,
-									x: 10,
-									y: frame.parent.height - 48 - 5 - i * 8,
-									theme:
-										drawButton: (renderer) =>
-											if system.power >= i
-												renderer\setDrawColor 0x00FF00
-											else
-												renderer\setDrawColor 0xFF8800
-
-											renderer\fillRect @rectangle!
-								}
+							self\addChild SystemView system, test, frame
 		}
 	},
 	yui.Frame {
