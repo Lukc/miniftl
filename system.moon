@@ -5,6 +5,7 @@ class
 
 		@power = 0
 		@level = 0
+		@health = 0
 
 		if opts
 			for key, value in pairs opts

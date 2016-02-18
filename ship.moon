@@ -85,25 +85,33 @@ class
 		return 0
 
 	finalize: () =>
+
 		width = 1
 		height = 1
 		@tiles = {}
 		@dijkstra = {}
+
 		for room in *@rooms
+
 			for j = 0,room.height-1
 				height = height +1
+
 				for i = 0,room.width-1
+
 					x = room.position.x + i
 					y = room.position.y + j
 					tempTile = Tile x, y
 					tempTile.posInDijkstra = #@dijkstra+1
+
 					unless @tiles[x]
 						@tiles[x] = {}
+
 					@tiles[x][y] = tempTile
 					@dijkstra[#@dijkstra+1] = tempTile
 					@dijkstra[#@dijkstra].weight = math.huge
 					@dijkstra[#@dijkstra].goTo
 					@dijkstra[#@dijkstra].process = false
+
 					if x > width
 						width = x
 					
@@ -123,10 +131,13 @@ class
 
 			if door.type == "vertical" and tile
 				tile\addLink @tiles[door.position.x+1][door.position.y], door, "right"
+
 				if @tiles[door.position.x+1][door.position.y]
 					@dijkstra[tile.posInDijkstra]\addLink @dijkstra[@tiles[door.position.x+1][door.position.y].posInDijkstra], door, "right"
+
 			if door.type == "horizontal" and tile
 				tile\addLink @tiles[door.position.x][door.position.y+1], door, "down"
+
 				if @tiles[door.position.x][door.position.y+1]
 					@dijkstra[tile.posInDijkstra]\addLink @dijkstra[@tiles[door.position.x][door.position.y+1].posInDijkstra], door, "down"
 
@@ -154,4 +165,49 @@ class
 				@shieldsProgress = 0
 
 	shieldsChargeTime: 2000
+
+
+	damaged: (weapon, room) =>
+
+		damage = 0
+
+		if weapon.type == "missile"
+			damage = weapon.damage
+
+		elseif weapon.type = "beam"
+			damage = weapon.damage - @shields
+
+		else
+			damage = weapon.damage
+
+			if @shields < 0
+				@shields = @shields - 1
+				return
+		
+		@health = @health - damage
+
+		if room.system
+			room.system.health = room.system.health - damage
+			unpower = room.system.power - room.system.health
+
+			if unpower > 0
+				for i = 1, unpower
+					self\unpower(room.system)
+
+		tiles = {}
+
+		for i = 0, room.width-1
+			for j = 0, room.height-1
+				tiles[#tiles+1] = @tiles[room.position.x+i][room.position.y+j]
+
+		for tile in tiles
+			if math.random(0,100) < weapon.fireChance
+				@tiles[tile.position.x][tile.position.y].fire = 100
+			
+			if math.random(0,100) < weapon.breachChance
+				@tiles[tile.position.x][tile.position.y].breach = 100
+
+
+
+			
 
