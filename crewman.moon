@@ -61,6 +61,7 @@ class
 						i = j
 				
 				if i == origInd and dijkstra[origInd].weight == math.huge
+					print "destination unreachable"
 					return nil
 
 			trajectory = {}

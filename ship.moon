@@ -171,6 +171,10 @@ class
 
 		@tiles.width = width
 		@tiles.height = height
+		
+		for i = 1, width
+			unless @tiles[i]
+				@tiles[i] = {}
 
 		for door in *@doors
 			tile = @tiles[door.position.x][door.position.y]
