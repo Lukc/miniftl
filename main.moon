@@ -301,15 +301,6 @@ w = yui.Window {
 	}
 }
 
-playerPosition =
-	x: 8
-	y: 3
-trajectory = player.crew[2]\pathfinding player.dijkstra, playerPosition, player.tiles
-if trajectory
-	for traj in *trajectory
-		print traj.direction .. " " .. traj.tile.position.x .. " " .. traj.tile.position.y
-else print "Destination unreachable"
-
 c = true
 while c do
 	c = yui\run {w}

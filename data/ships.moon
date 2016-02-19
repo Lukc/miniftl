@@ -30,7 +30,6 @@ systems = require "data.systems"
 		\addSystem systems.bridge, .rooms[5], 1
 
 	raider2: with Ship!
-		\addRoom (Room 2, 1), {x: 1, y: 1}
 		\addRoom (Room 2, 1), {x: 3, y: 1}
 		\addRoom (Room 2, 1), {x: 3, y: 7}
 
