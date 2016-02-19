@@ -12,17 +12,33 @@ CrewView =
 		unless opts.crew
 			error "no opts.crew!"
 
+		unless opts.selection
+			print "WARNING: no .selection parameter in CrewView"
+
 		@crew = opts.crew
+
+		@selection = opts.selection
 
 		yui.Widget.addChild self, yui.Label {
 			text: tostring @crew.name,
 			x: 50
 		}
 
+		@eventListeners.click = (button) =>
+			if button == 1
+				print "Crewmember selected."
+				@selection.type = "crew"
+				@selection.crew = opts.crew
+
+		@clickable = true
+
 	draw: (renderer) =>
 		yui.Widget.draw self, renderer
 
-		renderer\setDrawColor 0xFFFFFF
+		if @selection.type == "crew" and @selection.crew == @crew
+			renderer\setDrawColor 0xFFFFFF
+		else
+			renderer\setDrawColor 0x888888
 		renderer\drawRect @rectangle!
 
 		renderer\setDrawColor 0x44FF88

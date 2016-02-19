@@ -21,7 +21,12 @@ ReactorView = require "widgets.reactorview"
 systems = require "data.systems"
 ships = require "data.ships"
 
+-- Model
 battle = Battle!
+
+selection = {
+	type: "none"
+}
 
 player = ships.raider2\clone!\finalize!
 
@@ -51,7 +56,7 @@ for room in *player.rooms
 	if room.system
 		print "", room.system
 
-cli.dump player
+--cli.dump player
 
 yui.init!
 
@@ -149,9 +154,6 @@ w = yui.Window {
 	yui.Column {
 		-- Expected window size.
 		width: 1280,
-		--events:
-		--	update: (dt) =>
-		--		@realWidth = @parent.realWidth
 		yui.Frame {
 			height: 100,
 			events:
@@ -223,7 +225,7 @@ w = yui.Window {
 					update: (dt) =>
 						self.realWidth = self.parent.realWidth
 
-				unpack [(CrewView crew: crew) for crew in *player.crew]
+				unpack [(CrewView crew: crew, selection: selection) for crew in *player.crew]
 			}
 		},
 		yui.Row {
@@ -300,15 +302,6 @@ w = yui.Window {
 		y: 800 - 100 - 20
 	}
 }
-
-playerPosition =
-	x: 8
-	y: 3
-trajectory = player.crew[2]\pathfinding player.dijkstra, playerPosition, player.tiles
-if trajectory
-	for traj in *trajectory
-		print traj.direction .. " " .. traj.tile.position.x .. " " .. traj.tile.position.y
-else print "Destination unreachable"
 
 c = true
 while c do
