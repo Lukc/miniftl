@@ -23,65 +23,20 @@ ships = require "data.ships"
 
 battle = Battle!
 
-player = Ship!
+player = ships.raider2\clone!\finalize!
 
 battle\addShip player, 1
-battle\addShip ships.raider\clone!\finalize!, 1
+battle\addShip ships.raider2\clone!\finalize!, 1
 
 battle\addShip ships.raider\clone!\finalize!, 2
-battle\addShip ships.raider\clone!\finalize!, 2
+battle\addShip ships.raider2\clone!\finalize!, 2
 
 with player
-	\addRoom (Room 2, 1), {x: 1, y: 1}
-	\addRoom (Room 2, 1), {x: 3, y: 1}
-	\addRoom (Room 2, 2), {x: 3, y: 3}
-	\addRoom (Room 2, 1), {x: 3, y: 6}
-	\addRoom (Room 2, 1), {x: 1, y: 6}
-	\addRoom (Room 2, 2), {x: 5, y: 3}
-	\addRoom (Room 2, 1), {x: 4, y: 2}
-	\addRoom (Room 2, 1), {x: 4, y: 5}
-	\addRoom (Room 1, 2), {x: 7, y: 3}
-	\addRoom (Room 2, 1), {x: 7, y: 2}
-	\addRoom (Room 2, 1), {x: 7, y: 5}
-	\addRoom (Room 1, 2), {x: 9, y: 2}
-	\addRoom (Room 1, 2), {x: 9, y: 4}
-	\addRoom (Room 2, 2), {x: 10, y: 3}
-
-	\addDoor {x: 2, y: 1}, "horizontal"
-	\addDoor {x: 3, y: 2}, "horizontal"
-
-	\addDoor {x: 2, y: 1}, "vertical"
-	\addDoor {x: 2, y: 6}, "vertical"
-
-	\addDoor {x: 4, y: 1}, "horizontal"
-	\addDoor {x: 4, y: 5}, "horizontal"
-
-	\addDoor {x: 4, y: 3}, "vertical"
-	\addDoor {x: 4, y: 4}, "vertical"
-	\addDoor {x: 6, y: 3}, "vertical"
-	\addDoor {x: 6, y: 4}, "vertical"
-
-	\addDoor {x: 3, y: 4}, "horizontal"
-	\addDoor {x: 2, y: 5}, "horizontal"
-
-	\addDoor {x: 3, y: 2}, "vertical"
-	\addDoor {x: 3, y: 5}, "vertical"
-
-	\addDoor {x: 5, y: 2}, "horizontal"
-	\addDoor {x: 5, y: 4}, "horizontal"
-
-	\addSystem systems.engines, player.rooms[1], 3
-	\addSystem systems.weapons, player.rooms[2], 5
-	\addSystem systems.shields, player.rooms[4], 4
-	\addSystem systems.lifeSupport, player.rooms[5], 1
-
 	\addCrew (CrewMan {}, "Luke"), {x: player.rooms[3].position.x, y: player.rooms[3].position.y}
 
 	\addCrew (CrewMan {}, "Leia"), {x: player.rooms[4].position.x, y: player.rooms[4].position.y}
 
 	.reactorLevel = 14
-
-	\finalize!
 
 	\addWeapon Weapon
 		name: "Big Laser"
