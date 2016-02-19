@@ -212,18 +212,18 @@ class
 	shieldsChargeTime: 2000
 
 
-	damaged: (weapon, room) =>
+	damaged: (projectile) =>
 
 		damage = 0
 
-		if weapon.type == "missile"
-			damage = weapon.damage
+		if projectile.weapon.type == "missile"
+			damage = projectile.weapon.damage
 
 		elseif weapon.type = "beam"
-			damage = weapon.damage - @shields
+			damage = projectile.weapon.damage - @shields
 
 		else
-			damage = weapon.damage
+			damage = projectile.weapon.damage
 
 			if @shields < 0
 				@shields = @shields - 1
@@ -246,13 +246,9 @@ class
 				tiles[#tiles+1] = @tiles[room.position.x+i][room.position.y+j]
 
 		for tile in tiles
-			if math.random(0,100) < weapon.fireChance
+			if math.random(0,100) < projectile.weapon.fireChance
 				@tiles[tile.position.x][tile.position.y].fire = 100
 			
-			if math.random(0,100) < weapon.breachChance
+			if math.random(0,100) < projectile.weapon.breachChance
 				@tiles[tile.position.x][tile.position.y].breach = 100
-
-
-
-			
 
