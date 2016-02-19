@@ -7,6 +7,7 @@ Room = require "room"
 System = require "system"
 CrewMan = require "crewman"
 Weapon = require "weapon"
+Battle = require "battle"
 
 cli = require "cli"
 
@@ -20,8 +21,15 @@ ReactorView = require "widgets.reactorview"
 systems = require "data.systems"
 ships = require "data.ships"
 
+battle = Battle!
+
 player = Ship!
-enemy = ships.raider\clone!\finalize!
+
+battle\addShip player, 1
+battle\addShip ships.raider\clone!\finalize!, 1
+
+battle\addShip ships.raider\clone!\finalize!, 2
+battle\addShip ships.raider\clone!\finalize!, 2
 
 with player
 	\addRoom (Room 2, 1), {x: 1, y: 1}
@@ -101,7 +109,7 @@ w = yui.Window {
 
 	events:
 		update: (dt) =>
-			player\update dt
+			battle\update dt
 
 	theme:
 		drawRow: (r) =>
@@ -112,6 +120,54 @@ w = yui.Window {
 
 			r\drawRect yui.growRectangle @rectangle!, 2
 
+	yui.Frame {
+		x: 1280 - 2 - 8 * 32 - 2,
+		y: 2,
+		width: 2 + 8 * 32,
+		height: 34,
+
+		events:
+			update: (dt) =>
+				if #@children == 0
+					for i = 1, #battle.ships
+						ship = battle.ships[i]
+
+						self\addChild yui.Button {
+							x: 2 + 32 * (i - 1),
+							y: 2,
+							width: 30,
+							height: 30,
+
+							theme:
+								drawButton: (renderer) =>
+									fleet = battle\fleetOf ship
+									if fleet == 1
+										renderer\setDrawColor 0x8888FF
+									elseif fleet == 2
+										renderer\setDrawColor 0xFF8888
+									else
+										renderer\setDrawColor 0x888888
+
+									renderer\drawRect @rectangle!
+
+							events:
+								click: (button) =>
+									if button == 1
+										view = self\getRoot!\getElementById "targetView"
+
+										view\removeChild view.children[1]
+
+										view\addChild ShipView
+											width: view.realWidth,
+											height: view.realHeight,
+											ship: ship,
+											rotated: true
+
+							yui.Label
+								text: ship.name
+						}
+	},
+
 	ShipView {
 		x: 160,
 		y: 100,
@@ -120,13 +176,19 @@ w = yui.Window {
 		ship: player
 	},
 
-	ShipView {
+	yui.Frame {
 		x: 760,
 		y: 100,
 		width: 400,
 		height: 600,
-		ship: enemy,
-		rotated: true
+		id: "targetView",
+
+		ShipView {
+			width: 400,
+			height: 600,
+			ship: battle.fleets[2][1],
+			rotated: true,
+		},
 	},
 
 	yui.Column {
