@@ -29,3 +29,10 @@ class
 	__tostring: =>
 		"<Weapon: #{@type}, #{@damage}dmg, #{@shots}shots>"
 
+	aim: (ship, room) =>
+		projectile = 
+			weapon: self
+			targetShip: ship
+			targetRoom: room
+			positionProgress: 0
+		return projectile
