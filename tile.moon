@@ -17,7 +17,9 @@ class
 		}
 		
 		local direction2
+		
 		if tile
+		
 			switch direction
 				when "up"
 					direction2 = "down"
