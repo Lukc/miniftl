@@ -28,5 +28,20 @@ systems = require "data.systems"
 		\addSystem systems.engines, .rooms[4], 1
 
 		\addSystem systems.bridge, .rooms[5], 1
+
+	raider2: with Ship!
+		\addRoom (Room 2, 1), {x: 1, y: 1}
+		\addRoom (Room 2, 1), {x: 3, y: 1}
+		\addRoom (Room 2, 1), {x: 3, y: 7}
+
+		\addRoom (Room 1, 2), {x: 3, y: 2}
+		\addRoom (Room 1, 2), {x: 3, y: 5}
+
+		\addRoom (Room 2, 1), {x: 2, y: 4}
+
+		\addRoom (Room 1, 2), {x: 5, y: 1}
+		\addRoom (Room 1, 2), {x: 5, y: 6}
+
+		\addDoor {x: 2, y: 1}, "horizontal"
 }
 
