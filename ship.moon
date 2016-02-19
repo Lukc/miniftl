@@ -72,14 +72,20 @@ class
 
 	addSystem: (system, room, level) =>
 		system = system\clone!
+		
+		unless room
+			error "room is nil"
+		
+		unless level
+			error "level is nil"
 
 		@systems[#@systems+1] = system
 
 		system.room = room
 		room.system = system
 
-		if level
-			system.level = level
+		system.level = level
+		system.health = level
 
 	addCrew: (crew, position) =>
 		@crew[#@crew+1] = crew
