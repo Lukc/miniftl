@@ -16,12 +16,18 @@ ShipView = require "widgets.shipview"
 CrewView = require "widgets.crewview"
 SystemView = require "widgets.systemview"
 ReactorView = require "widgets.reactorview"
+WeaponControl = require "widgets.weaponcontrol"
 
 -- Game data.
 systems = require "data.systems"
 ships = require "data.ships"
 
+-- Model
 battle = Battle!
+
+selection = {
+	type: "none"
+}
 
 player = ships.raider2\clone!\finalize!
 
@@ -51,7 +57,7 @@ for room in *player.rooms
 	if room.system
 		print "", room.system
 
-cli.dump player
+--cli.dump player
 
 yui.init!
 
@@ -116,6 +122,7 @@ w = yui.Window {
 											width: view.realWidth,
 											height: view.realHeight,
 											ship: ship,
+											selection: selection,
 											rotated: true
 
 							yui.Label
@@ -128,6 +135,7 @@ w = yui.Window {
 		y: 100,
 		width: 600,
 		height: 400,
+		selection: selection,
 		ship: player
 	},
 
@@ -142,6 +150,7 @@ w = yui.Window {
 			width: 400,
 			height: 600,
 			ship: battle.fleets[2][1],
+			selection: selection,
 			rotated: true,
 		},
 	},
@@ -149,9 +158,6 @@ w = yui.Window {
 	yui.Column {
 		-- Expected window size.
 		width: 1280,
-		--events:
-		--	update: (dt) =>
-		--		@realWidth = @parent.realWidth
 		yui.Frame {
 			height: 100,
 			events:
@@ -223,7 +229,7 @@ w = yui.Window {
 					update: (dt) =>
 						self.realWidth = self.parent.realWidth
 
-				unpack [(CrewView crew: crew) for crew in *player.crew]
+				unpack [(CrewView crew: crew, selection: selection) for crew in *player.crew]
 			}
 		},
 		yui.Row {
@@ -237,7 +243,7 @@ w = yui.Window {
 							self\addChild SystemView system, player, frame
 		}
 	},
-	yui.Frame {
+	yui.Row {
 		width: 400,
 		height: 100,
 		x: 1280 - 400 * 2 - 20 * 2,
@@ -246,52 +252,12 @@ w = yui.Window {
 		events:
 			update: (dt) =>
 				if #@children == 0
-					offset = 0
 					for weapon in *player.weapons
-						self\addChild yui.Frame {
-							width: 130,
-							height: 100,
-							x: offset,
-
-							events:
-								click: (button) =>
-									if weapon.powered
-										weapon.powered = false
-
-										for system in *player.systems
-											if system.name == "Weapons"
-												system.power -= weapon.power
-												return
-									else
-										powerUsed = 0
-										for system in *player.systems
-											powerUsed += system.power
-
-										if powerUsed + weapon.power <= player.reactorLevel
-											weapon.powered = true
-
-											for system in *player.systems
-												if system.name == "Weapons"
-													system.power += weapon.power
-													return
-										else
-											print "Not enough power!"
-
-							theme:
-								drawFrame: (renderer) =>
-									renderer\setDrawColor 0x888888
-									renderer\drawRect @rectangle!
-
-									renderer\drawRect
-										x: @realX + 5,
-										y: @realY + 40,
-										w: 100 * (weapon.charge / weapon.chargeTime),
-										h: 10
-
-							yui.Label weapon.name
-						}
-
-						offset += 133
+						self\addChild (WeaponControl
+							player: player,
+							weapon: weapon,
+							selection: selection
+						)
 	},
 	yui.Frame {
 		width: 400,
