@@ -2,7 +2,7 @@
 yui = require ".yui.init"
 SDL = require "SDL"
 
-RoomButton = (room, rotated, selection) ->
+RoomButton = (room, rotated, selection, ship) ->
 	{:x, :y} = room.position
 	rect =
 		x: x,
@@ -26,10 +26,10 @@ RoomButton = (room, rotated, selection) ->
 					if selection.type == "weapon"
 						weapon = selection.weapon
 
-						if weapon.charge >= weapon.chargeTime
-							weapon.charge = 0
-
-							print "IM FIRIN MA LAZERZ"
+						weapon.target = {
+							room: room,
+							ship: ship
+						}
 
 					selection.type = "none"
 
@@ -59,7 +59,7 @@ ShipView =
 		@selection = opts.selection
 
 		for room in *@ship.rooms
-			self\addChild (RoomButton room, @rotated, @selection)
+			self\addChild (RoomButton room, @rotated, @selection, @ship)
 
 		for door in *@ship.doors
 			{:x, :y} = door.position

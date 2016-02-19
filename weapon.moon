@@ -15,6 +15,8 @@ class
 		
 		@powered = false
 
+		@target = nil
+
 	update: (dt) =>
 		if @powered
 			@charge += dt
@@ -24,7 +26,13 @@ class
 		if @charge < 0
 			@charge = 0
 		elseif @charge >= @chargeTime
-			@charge = @chargeTime
+			if @target
+				print "IM FIRING MA LAZERZ"
+
+				@target = nil
+				@charge = 0
+			else
+				@charge = @chargeTime
 
 	__tostring: =>
 		"<Weapon: #{@type}, #{@damage}dmg, #{@shots}shots>"
