@@ -103,7 +103,8 @@ w = yui.Window {
 		width: 600,
 		height: 400,
 		selection: selection,
-		ship: player
+		ship: player,
+		controlable: true
 	},
 
 	yui.Frame {
