@@ -122,6 +122,7 @@ w = yui.Window {
 											width: view.realWidth,
 											height: view.realHeight,
 											ship: ship,
+											selection: selection,
 											rotated: true
 
 							yui.Label
@@ -134,6 +135,7 @@ w = yui.Window {
 		y: 100,
 		width: 600,
 		height: 400,
+		selection: selection,
 		ship: player
 	},
 
@@ -148,6 +150,7 @@ w = yui.Window {
 			width: 400,
 			height: 600,
 			ship: battle.fleets[2][1],
+			selection: selection,
 			rotated: true,
 		},
 	},

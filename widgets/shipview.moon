@@ -2,6 +2,47 @@
 yui = require ".yui.init"
 SDL = require "SDL"
 
+RoomButton = (room, rotated, selection) ->
+	{:x, :y} = room.position
+	rect =
+		x: x,
+		y: y,
+		w: room.width,
+		h: room.height
+
+	if rotated
+		rect.x, rect.y = rect.y, rect.x
+		rect.w, rect.h = rect.h, rect.w
+
+	yui.Button {
+		x: rect.x * 48,
+		y: rect.y * 48,
+		width: 48 * rect.w,
+		height: 48 * rect.h,
+
+		events:
+			click: (button) =>
+				if button == 1 -- left
+					if selection.type == "weapon"
+						weapon = selection.weapon
+
+						if weapon.charge >= weapon.chargeTime
+							weapon.charge = 0
+
+							print "IM FIRIN MA LAZERZ"
+
+					selection.type = "none"
+
+		theme:
+			drawButton: (renderer) =>
+				if room.system
+					renderer\setDrawColor 0x88FF88
+				else
+					renderer\setDrawColor 0x888888
+
+				renderer\drawRect @rectangle!
+	}
+
 ShipView =
 	new: (opts) =>
 		yui.Widget.new self, opts
@@ -11,6 +52,14 @@ ShipView =
 
 		self.ship = opts.ship
 		self.rotated = opts.rotated or false
+
+		unless opts.selection
+			print "WARNING: no .selection in parameters!"
+
+		@selection = opts.selection
+
+		for room in *@ship.rooms
+			self\addChild (RoomButton room, @rotated, @selection)
 
 		for door in *@ship.doors
 			{:x, :y} = door.position
@@ -67,29 +116,6 @@ ShipView =
 	draw: (renderer) =>
 		renderer\setDrawColor 0xFF8800
 		renderer\drawRect @rectangle!
-
-		for room in *@ship.rooms
-			{:x, :y} = room.position
-
-			rect =
-				x: x * 48,
-				y: y * 48,
-				w: 48 * room.width,
-				h: 48 * room.height
-
-			if @rotated
-				rect.x, rect.y = rect.y, rect.x
-				rect.w, rect.h = rect.h, rect.w
-
-			rect.x += @realX
-			rect.y += @realY
-
-			if room.system
-				renderer\setDrawColor 0x00FFFF
-			else
-				renderer\setDrawColor 0xFFFFFF
-
-			renderer\drawRect rect
 
 		for crew in *@ship.crew
 			rect = {
