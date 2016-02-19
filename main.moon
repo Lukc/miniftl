@@ -81,55 +81,6 @@ w = yui.Window {
 
 			r\drawRect yui.growRectangle @rectangle!, 2
 
-	yui.Frame {
-		x: 1280 - 2 - 8 * 32 - 2,
-		y: 2,
-		width: 2 + 8 * 32,
-		height: 34,
-
-		events:
-			update: (dt) =>
-				if #@children == 0
-					for i = 1, #battle.ships
-						ship = battle.ships[i]
-
-						self\addChild yui.Button {
-							x: 2 + 32 * (i - 1),
-							y: 2,
-							width: 30,
-							height: 30,
-
-							theme:
-								drawButton: (renderer) =>
-									fleet = battle\fleetOf ship
-									if fleet == 1
-										renderer\setDrawColor 0x8888FF
-									elseif fleet == 2
-										renderer\setDrawColor 0xFF8888
-									else
-										renderer\setDrawColor 0x888888
-
-									renderer\drawRect @rectangle!
-
-							events:
-								click: (button) =>
-									if button == 1
-										view = self\getRoot!\getElementById "targetView"
-
-										view\removeChild view.children[1]
-
-										view\addChild ShipView
-											width: view.realWidth,
-											height: view.realHeight,
-											ship: ship,
-											selection: selection,
-											rotated: true
-
-							yui.Label
-								text: ship.name
-						}
-	},
-
 	ShipView {
 		x: 160,
 		y: 100,
@@ -156,7 +107,6 @@ w = yui.Window {
 	},
 
 	yui.Column {
-		-- Expected window size.
 		width: 1280,
 		yui.Frame {
 			height: 100,
@@ -180,7 +130,104 @@ w = yui.Window {
 								w: 10,
 								h: 20
 							}
+				yui.Frame {
+					x: 1280 - 2 - 8 * 32 - 2,
+					y: 2,
+					width: 2 + 8 * 32,
+					height: 34,
+
+					events:
+						update: (dt) =>
+							if #@children == 0
+								for i = 1, #battle.ships
+									ship = battle.ships[i]
+
+									self\addChild yui.Button {
+										x: 2 + 32 * (i - 1),
+										y: 2,
+										width: 30,
+										height: 30,
+
+										theme:
+											drawButton: (renderer) =>
+												fleet = battle\fleetOf ship
+												if fleet == 1
+													renderer\setDrawColor 0x8888FF
+												elseif fleet == 2
+													renderer\setDrawColor 0xFF8888
+												else
+													renderer\setDrawColor 0x888888
+
+												renderer\drawRect @rectangle!
+
+										events:
+											click: (button) =>
+												if button == 1
+													view = self\getRoot!\getElementById "targetView"
+
+													view\removeChild view.children[1]
+
+													view\addChild ShipView
+														width: view.realWidth,
+														height: view.realHeight,
+														ship: ship,
+														selection: selection,
+														rotated: true
+
+										yui.Label
+											text: ship.name
+									}
+				},
 			},
+			yui.Frame {
+				x: 1280 - 2 - 8 * 32 - 2,
+				y: 2,
+				width: 2 + 8 * 32,
+				height: 34,
+
+				events:
+					update: (dt) =>
+						if #@children == 0
+							for i = 1, #battle.ships
+								ship = battle.ships[i]
+
+								self\addChild yui.Button {
+									x: 2 + 32 * (i - 1),
+									y: 2,
+									width: 30,
+									height: 30,
+
+									theme:
+										drawButton: (renderer) =>
+											fleet = battle\fleetOf ship
+											if fleet == 1
+												renderer\setDrawColor 0x8888FF
+											elseif fleet == 2
+												renderer\setDrawColor 0xFF8888
+											else
+												renderer\setDrawColor 0x888888
+
+											renderer\drawRect @rectangle!
+
+									events:
+										click: (button) =>
+											if button == 1
+												view = self\getRoot!\getElementById "targetView"
+
+												view\removeChild view.children[1]
+
+												view\addChild ShipView
+													width: view.realWidth,
+													height: view.realHeight,
+													ship: ship,
+													selection: selection,
+													rotated: true
+
+									yui.Label
+										text: ship.name
+								}
+			},
+
 			yui.Frame {
 				x: 10,
 				y: 51,
