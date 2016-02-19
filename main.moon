@@ -301,6 +301,11 @@ w = yui.Window {
 	}
 }
 
+with player
+	trajectory = .crew[1]\pathfinding .dijkstra, .rooms[1], .tiles
+	for traj in *trajectory
+		print traj.tile.position.x .." " .. traj.tile.position.y .. " " .. traj.direction
+
 c = true
 while c do
 	c = yui\run {w}

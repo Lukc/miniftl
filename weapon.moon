@@ -35,4 +35,5 @@ class
 			targetShip: ship
 			targetRoom: room
 			positionProgress: 0
+		@charge = 0
 		return projectile
