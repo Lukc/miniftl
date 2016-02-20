@@ -4,6 +4,8 @@ class
 		@width  = width
 		@height = height
 
+		@oxygen = 100
+
 	clone: =>
 		n = @@ @width, @height
 

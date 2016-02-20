@@ -55,5 +55,6 @@ systems = require "data.systems"
 
 		\addSystem systems.weapons, .rooms[1], 3
 		\addSystem systems.shields, .rooms[2], 8
+		\addSystem systems.lifeSupport, .rooms[3], 3
 }
 

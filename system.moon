@@ -23,6 +23,9 @@ class
 		-- Special characteristics taken care of internally, like shields.
 		n.special = @special
 
+		if @oxygen
+			n.oxygen = [x for x in *@oxygen]
+
 		-- Does not use power to work.
 		n.powerless = @powerless
 

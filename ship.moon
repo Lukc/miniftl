@@ -110,6 +110,9 @@ class
 
 				true
 
+		while system.power > system.health and system.power > 0
+			self\unpower system
+
 	unpower: (system) =>
 		if system.unpowerMethod
 			system\unpowerMethod self
@@ -142,10 +145,8 @@ class
 
 		for room in *@rooms
 
-			for j = 0,room.height-1
-				height = height +1
-
-				for i = 0,room.width-1
+			for j = 0, room.height-1
+				for i = 0, room.width-1
 
 					x = room.position.x + i
 					y = room.position.y + j
@@ -163,6 +164,9 @@ class
 
 					if x > width
 						width = x
+
+					if y > height
+						height = y
 					
 					unless x == room.position.x
 						@tiles[x][y]\addLink @tiles[x-1][y], nil, "left"
@@ -198,6 +202,25 @@ class
 
 	update: (dt, battle) =>
 		maxShields = self\getMaxShields!
+
+		oxygen = 0
+
+		for system in *@systems
+			if system.oxygen
+				oxygen += system.oxygen[system.power] or 0
+
+		if oxygen == 0 -- no oxygen generation.
+			for room in *@rooms
+				room.oxygen -= 1.5 * dt / 1000
+
+				if room.oxygen < 0
+					room.oxygen = 0
+		else
+			for room in *@rooms
+				room.oxygen += oxygen * dt / 1000
+
+				if room.oxygen > 100
+					room.oxygen = 100
 
 		for weapon in *@weapons
 			weapon\update dt, battle

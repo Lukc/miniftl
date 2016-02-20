@@ -34,15 +34,22 @@ WeaponControl =
 					for system in *@player.systems
 						powerUsed += system.power
 
-					if powerUsed + @weapon.power <= @player.reactorLevel
-						@weapon.powered = true
-
-						for system in *@player.systems
-							if system.name == "Weapons"
-								system.power += @weapon.power
-								return
-					else
+					unless powerUsed + @weapon.power <= @player.reactorLevel
 						print "Not enough power!"
+						return
+
+					local weaponsControl
+					for system in *@player.systems
+						if system.name == "Weapons"
+							weaponsControl = system
+							break
+
+					unless weaponsControl.power + @weapon.power <= weaponsControl.health
+						print "Not enough system power!"
+						return
+
+					weaponsControl.power += @weapon.power
+					@weapon.powered = true
 			elseif button == 3 -- right
 				if @weapon.powered
 					@weapon.powered = false

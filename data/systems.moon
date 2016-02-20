@@ -38,5 +38,7 @@ System = require "system"
 		special: "shields"
 	},
 
-	lifeSupport: System "Life Support",
+	lifeSupport: System "Life Support", {
+		oxygen: {1, 1.5, 3, 5, 7, 9},
+	},
 }
