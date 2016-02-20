@@ -2,7 +2,7 @@
 yui = require ".yui.init"
 SDL = require "SDL"
 
-RoomButton = (room, rotated, selection, ship) ->
+RoomButton = (room, parent) ->
 	{:x, :y} = room.position
 	rect =
 		x: x,
@@ -10,7 +10,7 @@ RoomButton = (room, rotated, selection, ship) ->
 		w: room.width,
 		h: room.height
 
-	if rotated
+	if parent.rotated
 		rect.x, rect.y = rect.y, rect.x
 		rect.w, rect.h = rect.h, rect.w
 
@@ -23,15 +23,15 @@ RoomButton = (room, rotated, selection, ship) ->
 		events:
 			click: (button) =>
 				if button == 1 -- left
-					if selection.type == "weapon"
-						weapon = selection.weapon
+					if parent.selection.type == "weapon"
+						weapon = parent.selection.weapon
 
 						weapon.target = {
 							room: room,
-							ship: ship
+							ship: parent.ship
 						}
 
-					selection.type = "none"
+					parent.selection.type = "none"
 
 		theme:
 			drawButton: (renderer) =>
@@ -43,6 +43,61 @@ RoomButton = (room, rotated, selection, ship) ->
 				renderer\drawRect @rectangle!
 	}
 
+DoorButton = (door, parent) ->
+	{:x, :y} = door.position
+
+	local rect
+	if door.type == "horizontal"
+		rect =
+			x: x * 48 + 8,
+			y: (y + 1) * 48 - 6,
+			w: 48 - 2 * 8,
+			h: 12
+	else
+		rect =
+			x: (x + 1) * 48 - 6,
+			y: y * 48 + 8,
+			w: 12,
+			h: 48 - 2 * 8
+
+	if parent.rotated
+		rect.x, rect.y = rect.y, rect.x
+		rect.w, rect.h = rect.h, rect.w
+
+	rect.x += parent.realX
+	rect.y += parent.realY
+
+	yui.Button {
+		x: rect.x,
+		y: rect.y,
+		width: rect.w,
+		height: rect.h,
+		events:
+			click: (button) =>
+				unless parent.controlable
+					return false
+
+				if button == 1
+					door.opened = not door.opened
+		theme:
+			drawButton: (renderer) =>
+				renderer\setDrawColor 0x000000
+				renderer\fillRect self\rectangle!
+
+				if @hovered and parent.controlable
+					if door.opened
+						renderer\setDrawColor 0xFF8888
+					else
+						renderer\setDrawColor 0xBBBBBB
+				else
+					if door.opened
+						renderer\setDrawColor 0xFF0000
+					else
+						renderer\setDrawColor 0x888888
+
+				renderer\drawRect self\rectangle!
+	}
+
 ShipView =
 	new: (opts) =>
 		yui.Widget.new self, opts
@@ -52,6 +107,7 @@ ShipView =
 
 		self.ship = opts.ship
 		self.rotated = opts.rotated or false
+		self.controlable = opts.controlable or false
 
 		unless opts.selection
 			print "WARNING: no .selection in parameters!"
@@ -59,59 +115,10 @@ ShipView =
 		@selection = opts.selection
 
 		for room in *@ship.rooms
-			self\addChild (RoomButton room, @rotated, @selection, @ship)
+			self\addChild (RoomButton room, self)
 
 		for door in *@ship.doors
-			{:x, :y} = door.position
-
-			local rect
-			if door.type == "horizontal"
-				rect =
-					x: x * 48 + 8,
-					y: (y + 1) * 48 - 6,
-					w: 48 - 2 * 8,
-					h: 12
-			else
-				rect =
-					x: (x + 1) * 48 - 6,
-					y: y * 48 + 8,
-					w: 12,
-					h: 48 - 2 * 8
-
-			if @rotated
-				rect.x, rect.y = rect.y, rect.x
-				rect.w, rect.h = rect.h, rect.w
-
-			rect.x += @realX
-			rect.y += @realY
-
-			yui.Widget.addChild self, yui.Button {
-				x: rect.x,
-				y: rect.y,
-				width: rect.w,
-				height: rect.h,
-				events:
-					click: (button) =>
-						if button == 1
-							door.opened = not door.opened
-				theme:
-					drawButton: (renderer) =>
-						renderer\setDrawColor 0x000000
-						renderer\fillRect self\rectangle!
-
-						if @hovered
-							if door.opened
-								renderer\setDrawColor 0xFF8888
-							else
-								renderer\setDrawColor 0xBBBBBB
-						else
-							if door.opened
-								renderer\setDrawColor 0xFF0000
-							else
-								renderer\setDrawColor 0x888888
-
-						renderer\drawRect self\rectangle!
-			}
+			self\addChild (DoorButton door, self)
 
 	draw: (renderer) =>
 		renderer\setDrawColor 0xFF8800

@@ -57,6 +57,22 @@ for room in *player.rooms
 	if room.system
 		print "", room.system
 
+updateTargetView = (ship) =>
+	view = self\getRoot!\getElementById "targetView"
+
+	view\removeChild view.children[#view.children]
+
+	view\addChild ShipView
+		width: view.realWidth,
+		height: view.realHeight,
+		ship: ship,
+		selection: selection,
+		rotated: true
+
+	e = self\getRoot!\getElementById "targetHealth"
+	if e
+		e.ship = ship
+
 --cli.dump player
 
 yui.init!
@@ -87,7 +103,8 @@ w = yui.Window {
 		width: 600,
 		height: 400,
 		selection: selection,
-		ship: player
+		ship: player,
+		controlable: true
 	},
 
 	yui.Frame {
@@ -96,6 +113,23 @@ w = yui.Window {
 		width: 400,
 		height: 600,
 		id: "targetView",
+
+		yui.Frame {
+			width: 400,
+			height: 20,
+			id: "targetHealth",
+			theme:
+				drawFrame: (renderer) =>
+					renderer\setDrawColor 0x44FF88
+
+					for i = 1, @ship.health
+						renderer\fillRect {
+							x: @realX + (i - 1) * 12,
+							y: @realY + 2,
+							w: 10,
+							h: 18
+						}
+		},
 
 		ShipView {
 			width: 400,
@@ -130,54 +164,6 @@ w = yui.Window {
 								w: 10,
 								h: 20
 							}
-				yui.Frame {
-					x: 1280 - 2 - 8 * 32 - 2,
-					y: 2,
-					width: 2 + 8 * 32,
-					height: 34,
-
-					events:
-						update: (dt) =>
-							if #@children == 0
-								for i = 1, #battle.ships
-									ship = battle.ships[i]
-
-									self\addChild yui.Button {
-										x: 2 + 32 * (i - 1),
-										y: 2,
-										width: 30,
-										height: 30,
-
-										theme:
-											drawButton: (renderer) =>
-												fleet = battle\fleetOf ship
-												if fleet == 1
-													renderer\setDrawColor 0x8888FF
-												elseif fleet == 2
-													renderer\setDrawColor 0xFF8888
-												else
-													renderer\setDrawColor 0x888888
-
-												renderer\drawRect @rectangle!
-
-										events:
-											click: (button) =>
-												if button == 1
-													view = self\getRoot!\getElementById "targetView"
-
-													view\removeChild view.children[1]
-
-													view\addChild ShipView
-														width: view.realWidth,
-														height: view.realHeight,
-														ship: ship,
-														selection: selection,
-														rotated: true
-
-										yui.Label
-											text: ship.name
-									}
-				},
 			},
 			yui.Frame {
 				x: 1280 - 2 - 8 * 32 - 2,
@@ -212,16 +198,7 @@ w = yui.Window {
 									events:
 										click: (button) =>
 											if button == 1
-												view = self\getRoot!\getElementById "targetView"
-
-												view\removeChild view.children[1]
-
-												view\addChild ShipView
-													width: view.realWidth,
-													height: view.realHeight,
-													ship: ship,
-													selection: selection,
-													rotated: true
+												updateTargetView self, ship
 
 									yui.Label
 										text: ship.name
@@ -314,6 +291,7 @@ w = yui.Window {
 	}
 }
 
+updateTargetView w, battle.fleets[2][1]
 
 c = true
 while c do
