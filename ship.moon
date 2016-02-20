@@ -145,10 +145,8 @@ class
 
 		for room in *@rooms
 
-			for j = 0,room.height-1
-				height = height +1
-
-				for i = 0,room.width-1
+			for j = 0, room.height-1
+				for i = 0, room.width-1
 
 					x = room.position.x + i
 					y = room.position.y + j
@@ -166,6 +164,9 @@ class
 
 					if x > width
 						width = x
+
+					if y > height
+						height = y
 					
 					unless x == room.position.x
 						@tiles[x][y]\addLink @tiles[x-1][y], nil, "left"
