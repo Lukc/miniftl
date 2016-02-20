@@ -52,5 +52,8 @@ systems = require "data.systems"
 
 		\addDoor {x: 2, y: 3}, "vertical"
 		\addDoor {x: 2, y: 5}, "vertical"
+
+		\addSystem systems.weapons, .rooms[1], 3
+		\addSystem systems.shields, .rooms[2], 8
 }
 

@@ -57,6 +57,66 @@ for room in *player.rooms
 	if room.system
 		print "", room.system
 
+ShieldsIndicator = (ship, opts) ->
+	yui.Frame
+		x: opts.x,
+		y: opts.y,
+		width: 40 * 4 + 5 + 125,
+		height: 45,
+		theme:
+			drawFrame: (renderer) =>
+				maxShields = player\getMaxShields!
+
+				renderer\setDrawColor 0x0088FF
+
+				renderer\drawRect @rectangle!
+
+				for i = 1, player.shields
+					renderer\drawRect
+						x: @realX + (i - 1) * 40 + 5,
+						y: @realY + 5,
+						w: 35,
+						h: 35
+
+				renderer\setDrawColor 0x004488
+
+				for i = player.shields + 1, maxShields
+					renderer\drawRect
+						x: @realX + (i - 1) * 40 + 5,
+						y: @realY + 5,
+						w: 35,
+						h: 35
+
+				if player.shieldsProgress > 0
+					renderer\setDrawColor 0x0088FF
+
+					renderer\drawRect
+						x: @realX + 4 * 40 + 5,
+						y: @realY + 5,
+						w: math.floor math.floor (player.shieldsProgress / Ship.shieldsChargeTime) * 120,
+						h: 35
+
+HealthIndicator = (ship, opts) ->
+	with yui.Frame
+		width: 12 * 30 + 2,
+		height: 22,
+		x: opts.x,
+		y: opts.y,
+		id: opts.id,
+		theme:
+			drawFrame: (renderer) =>
+				renderer\setDrawColor 0x44FF88
+
+				renderer\drawRect @rectangle!
+
+				for i = 1, @ship.health
+					renderer\drawRect
+						x: @realX + (i - 1) * 12 + 2,
+						y: @realY + 2,
+						w: 10,
+						h: 18
+		.ship = ship
+
 updateTargetView = (ship) =>
 	view = self\getRoot!\getElementById "targetView"
 
@@ -70,8 +130,40 @@ updateTargetView = (ship) =>
 		rotated: true
 
 	e = self\getRoot!\getElementById "targetHealth"
-	if e
-		e.ship = ship
+	e.ship = ship
+
+updateTargetSelector = (battle) =>
+	selector = @\getElementById "targetShipSelector"
+
+	for i = 1, #battle.ships
+		ship = battle.ships[i]
+
+		selector\addChild yui.Button {
+			x: 2 + 32 * (i - 1),
+			y: 2,
+			width: 30,
+			height: 30,
+
+			theme:
+				drawButton: (renderer) =>
+					fleet = battle\fleetOf ship
+					if fleet == 1
+						renderer\setDrawColor 0x8888FF
+					elseif fleet == 2
+						renderer\setDrawColor 0xFF8888
+					else
+						renderer\setDrawColor 0x888888
+
+					renderer\drawRect @rectangle!
+
+			events:
+				click: (button) =>
+					if button == 1
+						updateTargetView self, ship
+
+			yui.Label
+				text: ship.name
+		}
 
 --cli.dump player
 
@@ -114,21 +206,10 @@ w = yui.Window {
 		height: 600,
 		id: "targetView",
 
-		yui.Frame {
-			width: 400,
-			height: 20,
+		HealthIndicator battle.fleets[2][1], {
+			y: 1, -- XXX: WHY?
+			x: 1, -- XXX: WHY?
 			id: "targetHealth",
-			theme:
-				drawFrame: (renderer) =>
-					renderer\setDrawColor 0x44FF88
-
-					for i = 1, @ship.health
-						renderer\fillRect {
-							x: @realX + (i - 1) * 12,
-							y: @realY + 2,
-							w: 10,
-							h: 18
-						}
 		},
 
 		ShipView {
@@ -148,95 +229,22 @@ w = yui.Window {
 				update: (dt) =>
 					root = self\getRoot!
 					self.realWidth = root.width
-			yui.Frame {
-				width: 12 * 32,
-				height: 24 + 20 + 4,
-				theme:
-					drawFrame: (renderer) =>
-						renderer\setDrawColor 0x44FF88
 
-						renderer\drawRect @rectangle!
-
-						for i = 1, player.maxHealth
-							renderer\drawRect {
-								x: i * 12,
-								y: 24,
-								w: 10,
-								h: 20
-							}
+			HealthIndicator player, {
+				id: "playerHealth",
 			},
+
 			yui.Frame {
 				x: 1280 - 2 - 8 * 32 - 2,
 				y: 2,
 				width: 2 + 8 * 32,
 				height: 34,
-
-				events:
-					update: (dt) =>
-						if #@children == 0
-							for i = 1, #battle.ships
-								ship = battle.ships[i]
-
-								self\addChild yui.Button {
-									x: 2 + 32 * (i - 1),
-									y: 2,
-									width: 30,
-									height: 30,
-
-									theme:
-										drawButton: (renderer) =>
-											fleet = battle\fleetOf ship
-											if fleet == 1
-												renderer\setDrawColor 0x8888FF
-											elseif fleet == 2
-												renderer\setDrawColor 0xFF8888
-											else
-												renderer\setDrawColor 0x888888
-
-											renderer\drawRect @rectangle!
-
-									events:
-										click: (button) =>
-											if button == 1
-												updateTargetView self, ship
-
-									yui.Label
-										text: ship.name
-								}
+				id: "targetShipSelector",
 			},
 
-			yui.Frame {
-				x: 10,
-				y: 51,
-				width: 45 * 4,
-				height: 43,
-				theme:
-					drawFrame: (renderer) =>
-						maxShields = player\getMaxShields!
-
-						renderer\setDrawColor 0x0088FF
-
-						for i = 1, player.shields
-							renderer\drawRect
-								x: (i - 1) * 45,
-								y: 53,
-								w: 40,
-								h: 40
-
-						renderer\setDrawColor 0x004488
-
-						for i = player.shields + 1, maxShields
-							renderer\drawRect
-								x: (i - 1) * 45,
-								y: 53,
-								w: 40,
-								h: 40
-
-						renderer\drawRect
-							x: 5 * 45,
-							y: 53,
-							w: math.floor math.floor (player.shieldsProgress / Ship.shieldsChargeTime) * 120,
-							h: 20
+			ShieldsIndicator player, {
+				x: 0,
+				y: 50
 			}
 		},
 		yui.Row {
@@ -291,6 +299,7 @@ w = yui.Window {
 	}
 }
 
+updateTargetSelector w, battle
 updateTargetView w, battle.fleets[2][1]
 
 c = true
