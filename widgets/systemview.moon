@@ -36,7 +36,9 @@ return (system, ship) ->
 			y: 276 - 48 - 7 - i * 8,
 			theme:
 				drawButton: (renderer) =>
-					if system.power >= i
+					if system.health < i
+						renderer\setDrawColor 0xFF0000
+					elseif system.power >= i
 						renderer\setDrawColor 0x00FF00
 					else
 						renderer\setDrawColor 0xFF8800

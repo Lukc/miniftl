@@ -110,6 +110,9 @@ class
 
 				true
 
+		while system.power > system.health and system.power > 0
+			self\unpower system
+
 	unpower: (system) =>
 		if system.unpowerMethod
 			system\unpowerMethod self
@@ -234,7 +237,7 @@ class
 		else
 			damage = projectile.weapon.damage
 
-			if @shields < 0
+			if @shields > 0
 				@shields = @shields - 1
 				return
 		
