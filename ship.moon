@@ -203,6 +203,25 @@ class
 	update: (dt, battle) =>
 		maxShields = self\getMaxShields!
 
+		oxygen = 0
+
+		for system in *@systems
+			if system.oxygen
+				oxygen += system.oxygen[system.power] or 0
+
+		if oxygen == 0 -- no oxygen generation.
+			for room in *@rooms
+				room.oxygen -= 1.5 * dt / 1000
+
+				if room.oxygen < 0
+					room.oxygen = 0
+		else
+			for room in *@rooms
+				room.oxygen += oxygen * dt / 1000
+
+				if room.oxygen > 100
+					room.oxygen = 100
+
 		for weapon in *@weapons
 			weapon\update dt, battle
 

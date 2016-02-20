@@ -41,6 +41,9 @@ RoomButton = (room, parent) ->
 
 		theme:
 			drawButton: (renderer) =>
+				renderer\setDrawColor {r: math.floor (127 * (100 - room.oxygen) / 100), g: 0, b: 0}
+				renderer\fillRect @rectangle!
+
 				if room.system
 					renderer\setDrawColor 0x88FF88
 				else
