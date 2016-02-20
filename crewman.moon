@@ -107,9 +107,40 @@ class
 		for tile in *dijkstra
 			tile.goTo = nil
 			tile.weight = math.huge
-				
+		
 		@move.trajectory = trajectory
 		@move.trajInd = 1
+		@move.trajectory[#@move.trajectory].crewMember.team = self
+		@move.trajectory[1].crewMember[@team] = nil
 
-	update: (dt, battle){
+	update: (dt, battle) =>
+		unless @move.trajectory
+			return
 		
+		unless #@move.trajectory > 1
+			return
+		
+		dest = @move.trajectory[@move.trajInd+1].position
+
+		dirx = dest.x - @move.trajectory[@move.trajInd].position.x
+		diry = dest.y - @move.trajectory[@move.trajInd].position.y
+
+		if dirx != 0 and diry != 0
+			@position.x += (math.sqrt 2) * dirx * @quickness * dt / 1000
+			@position.y += (math.sqrt 2) * diry * @quickness * dt / 1000
+		else
+			@position.x += dirx * @quickness * dt / 1000
+			@position.y += diry * @quickness * dt / 1000
+
+		if @position.x*dirx > dest.x*dirx
+			@position.x = dest.x
+
+		if @position.y*diry > dest.y*diry
+			@position.y = dest.y
+
+		if @position.x == dest.x and @position.y == dest.y
+			@move.trajInd +=1
+		
+		if @move.trajInd == #@move.trajectory
+			@move.trajInd = 1
+			@move.trajectory = {}
