@@ -90,6 +90,9 @@ class
 	addCrew: (crew, position) =>
 		@crew[#@crew+1] = crew
 		crew.position = position
+		@tiles[position.x][position.y].crewMember["ally"] = crew
+		if @tiles[position.x][position.y].posInDijkstra
+			@dijkstra[@tiles[position.x][position.y].posInDijkstra].crerwMember["ally"] = crew
 
 	addWeapon: (weapon) =>
 		@weapons[#@weapons+1] = weapon

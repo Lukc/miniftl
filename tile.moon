@@ -5,6 +5,7 @@ class
 		@breach = 0
 		@air = 100
 		@links ={}
+		@crewMember = {}
 		@position =
 			x: x,
 			y: y
@@ -26,7 +27,7 @@ class
 				when "down"
 					direction2 = "up"
 				when "right"
-					direction2 = "left" 
+					direction2 = "left"
 				when "left"
 					direction2 = "right"
 			

@@ -27,7 +27,7 @@ class
 			@charge = 0
 		elseif @charge >= @chargeTime
 			if @target
-				print "IM FIRING MA LAZERZ"
+				@\aim @target.ship, @target.room
 
 				@target = nil
 				@charge = 0
@@ -38,7 +38,7 @@ class
 		"<Weapon: #{@type}, #{@damage}dmg, #{@shots}shots>"
 
 	aim: (ship, room) =>
-		projectile = 
+		projectile =
 			weapon: self
 			targetShip: ship
 			targetRoom: room
