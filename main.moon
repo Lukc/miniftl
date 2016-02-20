@@ -50,6 +50,10 @@ with player
 		shots: 3
 	\addWeapon Weapon
 		name: "Simple Laser"
+	\addWeapon Weapon
+		name: "Fire Laser" -- wait, what?
+		chargeTime: 2000
+		fireChance: 100
 
 for room in *player.rooms
 	print room

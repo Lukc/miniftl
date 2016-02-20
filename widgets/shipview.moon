@@ -49,6 +49,29 @@ RoomButton = (room, parent) ->
 					renderer\setDrawColor 0x888888
 
 				renderer\drawRect @rectangle!
+
+				for x = 1, room.width
+					for y = 1, room.height
+						tile = parent.ship.tiles[room.position.x + x - 1][room.position.y + y - 1]
+
+						if parent.rotated
+							x, y = y, x
+
+						if tile.fire > 0
+							renderer\setDrawColor 0xFF0000
+							renderer\drawRect
+								x: @realX + 5 + 48 * (x - 1),
+								y: @realY + 5 + 48 * (y - 1),
+								w: 48 - 10,
+								h: 48 - 10
+
+						if tile.breach > 0
+							renderer\setDrawColor 0x888888
+							renderer\drawRect
+								x: @realX + 7 + 48 * (x - 1),
+								y: @realY + 7 + 48 * (y - 1),
+								w: 48 - 16,
+								h: 48 - 16
 	}
 
 DoorButton = (door, parent) ->

@@ -59,7 +59,9 @@ WeaponControl =
 							system.power -= @weapon.power
 							return
 
-		self\addChild yui.Label @weapon.name
+		self\addChild yui.Label {
+			text: @weapon.name or "ERROR"
+		}
 
 	draw: (renderer) =>
 		if @hovered
@@ -76,6 +78,8 @@ WeaponControl =
 			y: @realY + 40,
 			w: 100 * (@weapon.charge / @weapon.chargeTime),
 			h: 10
+
+		yui.Widget.draw self, renderer
 
 yui.Object WeaponControl, yui.Widget
 
