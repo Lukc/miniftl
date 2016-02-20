@@ -196,11 +196,11 @@ class
 
 		self
 
-	update: (dt) =>
+	update: (dt, battle) =>
 		maxShields = self\getMaxShields!
 
 		for weapon in *@weapons
-			weapon\update dt
+			weapon\update dt, battle
 
 		if @shields == maxShields
 			return
@@ -224,17 +224,13 @@ class
 
 	shieldsChargeTime: 2000
 
-
-	damaged: (projectile) =>
-
-		damage = 0
+	damage: (projectile) =>
+		local damage
 
 		if projectile.weapon.type == "missile"
 			damage = projectile.weapon.damage
-
-		elseif weapon.type == "beam"
+		elseif projectile.weapon.type == "beam"
 			damage = projectile.weapon.damage - @shields
-
 		else
 			damage = projectile.weapon.damage
 
@@ -244,6 +240,7 @@ class
 		
 		@health = @health - damage
 
+		room = projectile.targetRoom
 		if room.system
 			room.system.health = room.system.health - damage
 			unpower = room.system.power - room.system.health
@@ -258,9 +255,10 @@ class
 			for j = 0, room.height-1
 				tiles[#tiles+1] = @tiles[room.position.x+i][room.position.y+j]
 
-		for tile in tiles
+		for tile in *tiles
 			if math.random(0,100) < projectile.weapon.fireChance
-				@tiles[tile.position.x][tile.position.y].fire = 100
+				tile.fire = 100
 			
 			if math.random(0,100) < projectile.weapon.breachChance
-				@tiles[tile.position.x][tile.position.y].breach = 100
+				tile.breach = 100
+

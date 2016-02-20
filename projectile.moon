@@ -6,8 +6,10 @@ class
 		@targetRoom = room
 		@distance = 0
 
-	update: (dt) =>
-		@distance += dt * weapon.projQuickness
+	update: (dt, battle) =>
+		@distance += dt * @weapon.projQuickness
+
 		if @distance >= 1
-			ship.damage(self)
-			return 1
+			@targetShip\damage self
+
+			battle\removeProjectile self

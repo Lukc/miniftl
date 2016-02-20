@@ -1,4 +1,6 @@
 
+Projectile = require "projectile"
+
 class
 	new: (arg) =>
 		@name = arg.name or "Test Weapon"
@@ -18,7 +20,7 @@ class
 
 		@target = nil
 
-	update: (dt) =>
+	update: (dt, battle) =>
 		if @powered
 			@charge += dt
 		else
@@ -28,7 +30,7 @@ class
 			@charge = 0
 		elseif @charge >= @chargeTime
 			if @target
-				@\aim @target.ship, @target.room
+				battle\addProjectile @\aim @target.ship, @target.room
 
 				@target = nil
 				@charge = 0

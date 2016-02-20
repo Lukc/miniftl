@@ -41,8 +41,6 @@ with player
 	\addCrew (CrewMan {}, "Luke"), {x: player.rooms[3].position.x, y: player.rooms[3].position.y}
 
 	\addCrew (CrewMan {}, "Leia"), {x: player.rooms[4].position.x, y: player.rooms[4].position.y}
-	
-	\addCrew (CrewMan {}, "R2D2"), {x: player.rooms[3].position.x, y: player.rooms[3].position.y+1}
 
 	.reactorLevel = 14
 
