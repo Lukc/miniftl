@@ -20,7 +20,6 @@ RoomButton = (room, parent) ->
 		gridWidth, gridHeight = gridHeight, gridWidth
 
 	yui.Button {
-		--x: rect.x * 48,
 		x: (parent.width - 48 * gridWidth) / 2 + (rect.x - 1) * 48,
 		y: (parent.height - 48 * gridHeight) / 2 + (rect.y - 1) * 48,
 		width: 48 * rect.w,
