@@ -3,12 +3,16 @@ class
 	new: (species, name) =>
 		@maxHealth = species.health or 100
 		@health    = species.health or 100
+		@quickness = species.quickness or 60
 		@name = name or "unnamed person"
 		@team = "ally"
 		@boarding = false
 		@position =
 			x: 0
 			y: 0
+		@move =
+			trajectory: {}
+			trajInd: 1
 		@experience = {}
 		for ability in *@@abilities
 			@experience[ability] = 0
@@ -80,9 +84,7 @@ class
 
 		trajectory = {}
 		
-		trajectory[1] =
-			tile: dijkstra[origInd]
-			direction: dijkstra[origInd].goTo
+		trajectory[1] = dijkstra[origInd]
 			
 		tile = dijkstra[origInd]
 		
@@ -100,13 +102,14 @@ class
 			unless stop
 				error "there is no such a direction"
 				
-			trajectory[#trajectory+1] =
-				tile: tile
-				direction: tile.goTo
+			trajectory[#trajectory+1] = tile
 
 		for tile in *dijkstra
 			tile.goTo = nil
 			tile.weight = math.huge
 				
-		return trajectory
+		@move.trajectory = trajectory
+		@move.trajInd = 1
 
+	update: (dt, battle){
+		
