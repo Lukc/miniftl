@@ -4,6 +4,8 @@ class
 		@maxHealth = species.health or 100
 		@health    = species.health or 100
 		@name = name or "unnamed person"
+		@team = "ally"
+		@boarding = false
 		@position =
 			x: 0
 			y: 0
@@ -25,11 +27,19 @@ class
 		unless room
 			error "room is nil"
 		
-		destination = room.position
 		
+		for i = room.width-1, 0, -1
+			for j = room.height-1, 0, -1
+				unless tiles[room.position.x+i][room.position.y+j].crewMember[@team]
+						destination = tiles[room.position.x+i][room.position.y+j]
+		
+		unless destination
+			print "room is already full"
+			return nil
+
 		origInd = tiles[@position.x][@position.y].posInDijkstra
 		destInd = tiles[destination.x][destination.y].posInDijkstra
-		
+
 		dijkstra[destInd].weight = 0
 		dijkstra[destInd].goTo = "arrived"
 		
