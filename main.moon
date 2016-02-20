@@ -61,6 +61,7 @@ ShieldsIndicator = (ship, opts) ->
 	yui.Frame
 		x: opts.x,
 		y: opts.y,
+		id: opts.id,
 		width: 40 * 4 + 5 + 125,
 		height: 45,
 		theme:
@@ -139,10 +140,10 @@ updateTargetSelector = (battle) =>
 		ship = battle.ships[i]
 
 		selector\addChild yui.Button {
-			x: 2 + 32 * (i - 1),
-			y: 2,
-			width: 30,
-			height: 30,
+			x: 2,
+			y: 2 + 50 * (i - 1),
+			width: 86,
+			height: 48,
 
 			theme:
 				drawButton: (renderer) =>
@@ -206,12 +207,6 @@ w = yui.Window {
 		height: 600,
 		id: "targetView",
 
-		HealthIndicator battle.fleets[2][1], {
-			y: 1, -- XXX: WHY?
-			x: 1, -- XXX: WHY?
-			id: "targetHealth",
-		},
-
 		ShipView {
 			width: 400,
 			height: 600,
@@ -234,17 +229,20 @@ w = yui.Window {
 				id: "playerHealth",
 			},
 
-			yui.Frame {
-				x: 1280 - 2 - 8 * 32 - 2,
-				y: 2,
-				width: 2 + 8 * 32,
-				height: 34,
-				id: "targetShipSelector",
-			},
-
 			ShieldsIndicator player, {
 				x: 0,
 				y: 50
+			}
+
+			HealthIndicator battle.fleets[2][1], {
+				x: 700,
+				y: 1,
+				id: "targetHealth",
+			},
+			ShieldsIndicator battle.fleets[2][1], {
+				x: 700,
+				y: 24,
+				id: "targetShields"
 			}
 		},
 		yui.Row {
@@ -290,6 +288,20 @@ w = yui.Window {
 							weapon: weapon,
 							selection: selection
 						)
+	},
+	yui.Frame {
+		x: 1280 - 2 - 88 - 4,
+		y: 2,
+		width: 2 + 88,
+		height: 2 + 8 * 50,
+		id: "targetShipSelector",
+		theme:
+			drawFrame: (renderer) =>
+				renderer\setDrawColor 0x000000
+				renderer\fillRect @rectangle!
+
+				renderer\setDrawColor 0x888888
+				renderer\drawRect @rectangle!
 	},
 	yui.Frame {
 		width: 400,

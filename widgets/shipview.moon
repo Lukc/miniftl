@@ -123,6 +123,7 @@ ShipView =
 	draw: (renderer) =>
 		renderer\setDrawColor 0xFF8800
 		renderer\drawRect @rectangle!
+		renderer\drawRect yui.growRectangle @rectangle!, -1
 
 		for crew in *@ship.crew
 			rect = {
