@@ -234,7 +234,7 @@ class
 		else
 			damage = projectile.weapon.damage
 
-			if @shields < 0
+			if @shields > 0
 				@shields = @shields - 1
 				return
 		
@@ -256,6 +256,10 @@ class
 				tiles[#tiles+1] = @tiles[room.position.x+i][room.position.y+j]
 
 		for tile in *tiles
+			if tile.crewMember[1]
+				crewMember[1].health -= projectile.weapon.crewDamage
+			if tile.crewMember[2]
+				crewMember[2].health -= projectile.weapon.crewDamage
 			if math.random(0,100) < projectile.weapon.fireChance
 				tile.fire = 100
 			
