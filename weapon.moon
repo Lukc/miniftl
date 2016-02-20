@@ -12,7 +12,8 @@ class
 		@power = arg.power or 1
 		@chargeTime = arg.chargeTime or 6000
 		@charge = 0
-		
+		@projQuickness = arg.projQuickness or 1
+
 		@powered = false
 
 		@target = nil
@@ -38,10 +39,5 @@ class
 		"<Weapon: #{@type}, #{@damage}dmg, #{@shots}shots>"
 
 	aim: (ship, room) =>
-		projectile =
-			weapon: self
-			targetShip: ship
-			targetRoom: room
-			positionProgress: 0
-		@charge = 0
+		projectile = Projectile self, ship, room
 		return projectile

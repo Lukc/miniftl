@@ -232,7 +232,7 @@ class
 		if projectile.weapon.type == "missile"
 			damage = projectile.weapon.damage
 
-		elseif weapon.type = "beam"
+		elseif weapon.type == "beam"
 			damage = projectile.weapon.damage - @shields
 
 		else
@@ -264,4 +264,3 @@ class
 			
 			if math.random(0,100) < projectile.weapon.breachChance
 				@tiles[tile.position.x][tile.position.y].breach = 100
-
