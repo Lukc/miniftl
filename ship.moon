@@ -279,8 +279,12 @@ class
 				tiles[#tiles+1] = @tiles[room.position.x+i][room.position.y+j]
 
 		for tile in *tiles
+			if tile.crewMember[1]
+				crewMember[1].health -= projectile.weapon.crewDamage
+			if tile.crewMember[2]
+				crewMember[2].health -= projectile.weapon.crewDamage
+
 			if (math.random 0, 100) < projectile.weapon.fireChance
-				print "FIREZ!!!"
 				tile.fire = 100
 			
 			if (math.random 0, 100) < projectile.weapon.breachChance

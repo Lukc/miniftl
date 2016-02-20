@@ -3,12 +3,16 @@ class
 	new: (species, name) =>
 		@maxHealth = species.health or 100
 		@health    = species.health or 100
+		@quickness = species.quickness or 60
 		@name = name or "unnamed person"
 		@team = "ally"
 		@boarding = false
 		@position =
 			x: 0
 			y: 0
+		@move =
+			trajectory: {}
+			trajInd: 1
 		@experience = {}
 		for ability in *@@abilities
 			@experience[ability] = 0
@@ -80,9 +84,7 @@ class
 
 		trajectory = {}
 		
-		trajectory[1] =
-			tile: dijkstra[origInd]
-			direction: dijkstra[origInd].goTo
+		trajectory[1] = dijkstra[origInd]
 			
 		tile = dijkstra[origInd]
 		
@@ -100,13 +102,45 @@ class
 			unless stop
 				error "there is no such a direction"
 				
-			trajectory[#trajectory+1] =
-				tile: tile
-				direction: tile.goTo
+			trajectory[#trajectory+1] = tile
 
 		for tile in *dijkstra
 			tile.goTo = nil
 			tile.weight = math.huge
-				
-		return trajectory
+		
+		@move.trajectory = trajectory
+		@move.trajInd = 1
+		@move.trajectory[#@move.trajectory].crewMember.team = self
+		@move.trajectory[1].crewMember[@team] = nil
 
+	update: (dt, battle) =>
+		unless @move.trajectory
+			return
+		
+		unless #@move.trajectory > 1
+			return
+		
+		dest = @move.trajectory[@move.trajInd+1].position
+
+		dirx = dest.x - @move.trajectory[@move.trajInd].position.x
+		diry = dest.y - @move.trajectory[@move.trajInd].position.y
+
+		if dirx != 0 and diry != 0
+			@position.x += (math.sqrt 2) * dirx * @quickness * dt / 1000
+			@position.y += (math.sqrt 2) * diry * @quickness * dt / 1000
+		else
+			@position.x += dirx * @quickness * dt / 1000
+			@position.y += diry * @quickness * dt / 1000
+
+		if @position.x*dirx > dest.x*dirx
+			@position.x = dest.x
+
+		if @position.y*diry > dest.y*diry
+			@position.y = dest.y
+
+		if @position.x == dest.x and @position.y == dest.y
+			@move.trajInd +=1
+		
+		if @move.trajInd == #@move.trajectory
+			@move.trajInd = 1
+			@move.trajectory = {}

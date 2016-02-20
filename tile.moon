@@ -3,7 +3,6 @@ class
 	new:(x,y)  =>
 		@fire = 0
 		@breach = 0
-		@air = 100
 		@links ={}
 		@crewMember = {}
 		@position =
