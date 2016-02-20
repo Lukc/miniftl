@@ -137,6 +137,8 @@ ShipView =
 		renderer\drawRect @rectangle!
 		renderer\drawRect yui.growRectangle @rectangle!, -1
 
+		yui.Widget.draw self, renderer
+
 		if PRINTING_CENTERED_SHIP_BLOCK
 			renderer\setDrawColor 0xFF0088
 			if @rotated
@@ -174,8 +176,6 @@ ShipView =
 
 			renderer\setDrawColor 0x00FF88
 			renderer\drawRect rect
-
-		yui.Widget.draw self, renderer
 
 yui.Object ShipView, yui.Widget
 
