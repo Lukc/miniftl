@@ -3,7 +3,7 @@ class
 	new: (species, name) =>
 		@maxHealth = species.health or 100
 		@health    = species.health or 100
-		@quickness = species.quickness or 60
+		@quickness = species.quickness or 0.6
 		@name = name or "unnamed person"
 		@team = "ally"
 		@boarding = false
@@ -31,11 +31,12 @@ class
 		unless room
 			error "room is nil"
 		
+		local destination
 		
 		for i = room.width-1, 0, -1
 			for j = room.height-1, 0, -1
 				unless tiles[room.position.x+i][room.position.y+j].crewMember[@team]
-						destination = tiles[room.position.x+i][room.position.y+j]
+						destination = tiles[room.position.x+i][room.position.y+j].position
 		
 		unless destination
 			print "room is already full"
@@ -94,13 +95,15 @@ class
 			
 			while tile.links[i] and not stop
 				if tile.links[i].direction == tile.goTo
+					print "im here"
 					tile = tile.links[i].tile
 					stop = true
 					
 				i+=1
 				
 			unless stop
-				error "there is no such a direction"
+				print "there is no such a direction"
+				return nil
 				
 			trajectory[#trajectory+1] = tile
 
