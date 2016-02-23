@@ -1,6 +1,4 @@
 
-Room = require "room"
-
 class
 	new: (species, name) =>
 		@maxHealth = species.health or 100
@@ -44,7 +42,6 @@ class
 		
 		while positions[i] and not stop
 			unless tiles[positions[i].x][positions[i].y].crewMember[@team]
-				print "im here"
 				destination = positions[i]
 				stop = true
 			i += 1
@@ -82,7 +79,7 @@ class
 						elseif dijkstra[i].position.y > link.tile.position.y
 							link.tile.goTo = "down"
 						
---						print link.tile.goTo .. " " .. link.tile.position.x .. " " .. link.tile.position.y
+						print link.tile.goTo .. " " .. link.tile.position.x .. " " .. link.tile.position.y
 				
 			dijkstra[i].process = true
 			i = origInd
@@ -91,9 +88,9 @@ class
 				if dijkstra[j].weight < dijkstra[i].weight and not dijkstra[j].process
 					i = j
 			
-			if i == origInd and dijkstra[origInd].weight == math.huge
-				print "destination unreachable"
-				return nil
+		if dijkstra[origInd].weight == math.huge
+			print "destination unreachable"
+			return nil
 
 		trajectory = {}
 		
@@ -107,7 +104,6 @@ class
 			
 			while tile.links[i] and not stop
 				if tile.links[i].direction == tile.goTo
-					print "im here"
 					tile = tile.links[i].tile
 					stop = true
 					
@@ -118,22 +114,48 @@ class
 				return nil
 				
 			trajectory[#trajectory+1] = tile
-
+			
+		dijkstra[origInd].crewMember[@team] = nil
+		dijkstra[destInd].crewMember[@team] = self
+		
 		for tile in *dijkstra
 			tile.goTo = nil
 			tile.weight = math.huge
+			tile.process = false
 		
 		@move.trajectory = trajectory
 		@move.trajInd = 1
 		@move.trajectory[#@move.trajectory].crewMember.team = self
 		@move.trajectory[1].crewMember[@team] = nil
 
-	update: (dt, battle) =>
+	roundPos: =>
+		position = {
+			x: math.floor (@position.x + 0.5)
+			y: math.floor (@position.y + 0.5)
+		}
+		return position
+
+	update: (dt, battle, fire, oxygen) =>
+		
+		--print @name
+		
+		if fire
+			@health -= 5 * dt / 1000
+		
+		unless oxygen
+			@health -= 5 * dt / 1000
+		
+		if @health < 0
+			@health = 0
+		
 		unless @move.trajectory
 			return
 		
+		--print #@move.trajectory
+		
 		unless #@move.trajectory > 1
 			return
+		
 		
 		dest = @move.trajectory[@move.trajInd+1].position
 
@@ -159,3 +181,5 @@ class
 		if @move.trajInd == #@move.trajectory
 			@move.trajInd = 1
 			@move.trajectory = {}
+		
+

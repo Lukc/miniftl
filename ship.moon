@@ -211,7 +211,7 @@ class
 
 		if oxygen == 0 -- no oxygen generation.
 			for room in *@rooms
-				room.oxygen -= 1.5 * dt / 1000
+				room.oxygen -= 1.5 * dt /1000
 
 				if room.oxygen < 0
 					room.oxygen = 0
@@ -221,9 +221,26 @@ class
 
 				if room.oxygen > 100
 					room.oxygen = 100
-					
+		
+		local crewPos
+		local room
+		local oxygen
+		
 		for crewman in *@crew
-			crewman\update dt, battle
+			oxygen = true
+			crewPos = crewman\roundPos !
+			room = @\roomByPos crewPos
+			
+			positions = room\positionTiles !
+			fire = false
+			
+			for position in *positions
+				if @tiles[position.x][position.y].fire > 0
+					fire = true
+
+			if room.oxygen < 30
+				oxygen = false
+			crewman\update dt, battle, fire, oxygen
 		
 		for weapon in *@weapons
 			weapon\update dt, battle
@@ -293,3 +310,13 @@ class
 			if (math.random 0, 100) < projectile.weapon.breachChance
 				tile.breach = 100
 
+
+	roomByPos: (position) =>
+		
+		for room in *@rooms
+			if room.position.x <= position.x and room.position.x + room.width > position.x
+				if room.position.y <= position.y and room.position.y + room.height > position.y
+					return room
+		print "there is no room at these coordinates"
+
+			

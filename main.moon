@@ -318,7 +318,9 @@ w = yui.Window {
 updateTargetSelector w, battle
 updateTargetView w, battle.fleets[2][1]
 
-player.crew[2]\pathfinding player.dijkstra, player.rooms[6], player.tiles
+player.crew[1]\pathfinding player.dijkstra, player.rooms[5], player.tiles
+player.crew[2]\pathfinding player.dijkstra, player.rooms[5], player.tiles
+player.tiles[player.rooms[5].position.x][player.rooms[5].position.y].fire = 100
 
 c = true
 while c do
