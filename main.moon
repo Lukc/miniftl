@@ -40,7 +40,7 @@ battle\addShip ships.raider2\clone!\finalize!, 2
 with player
 	\addCrew (CrewMan {}, "Luke"), {x: player.rooms[3].position.x, y: player.rooms[3].position.y}
 
-	\addCrew (CrewMan {}, "Leia"), {x: player.rooms[4].position.x, y: player.rooms[4].position.y}
+	\addCrew (CrewMan {}, "Leia"), {x: player.rooms[#player.rooms].position.x, y: player.rooms[#player.rooms].position.y}
 
 	.reactorLevel = 14
 
@@ -317,6 +317,8 @@ w = yui.Window {
 
 updateTargetSelector w, battle
 updateTargetView w, battle.fleets[2][1]
+
+player.crew[2]\pathfinding player.dijkstra, player.rooms[6], player.tiles
 
 c = true
 while c do

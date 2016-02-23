@@ -14,3 +14,18 @@ class
 	__tostring: =>
 		"<Room: #{@width}x#{@height}>"
 
+	positionTiles: =>
+		positions = {}
+		
+		for i = 0, @width - 1
+			for j = 0, @height - 1
+			
+				tempPos = {
+					x: @position.x + i
+					y: @position.y +j
+				}
+				
+				positions[#positions+1] = tempPos
+	
+		return positions
+				

@@ -221,7 +221,10 @@ class
 
 				if room.oxygen > 100
 					room.oxygen = 100
-
+					
+		for crewman in *@crew
+			crewman\update dt, battle
+		
 		for weapon in *@weapons
 			weapon\update dt, battle
 

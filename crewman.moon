@@ -1,4 +1,6 @@
 
+Room = require "room"
+
 class
 	new: (species, name) =>
 		@maxHealth = species.health or 100
@@ -33,10 +35,20 @@ class
 		
 		local destination
 		
-		for i = room.width-1, 0, -1
-			for j = room.height-1, 0, -1
-				unless tiles[room.position.x+i][room.position.y+j].crewMember[@team]
-						destination = tiles[room.position.x+i][room.position.y+j].position
+		positions = {}
+		
+		positions = room\positionTiles !
+		
+		stop = false
+		i = 1
+		
+		while positions[i] and not stop
+			unless tiles[positions[i].x][positions[i].y].crewMember[@team]
+				print "im here"
+				destination = positions[i]
+				stop = true
+			i += 1
+				
 		
 		unless destination
 			print "room is already full"
