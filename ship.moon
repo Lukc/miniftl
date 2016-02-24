@@ -186,19 +186,23 @@ class
 		for door in *@doors
 			tile = @tiles[door.position.x][door.position.y]
 
-			if door.type == "vertical" and tile
-				tile\addLink @tiles[door.position.x+1][door.position.y], door, "right"
+			if door.type == "vertical"
+				if tile
+					tile\addLink @tiles[door.position.x+1][door.position.y], door, "right"
+				else
+					tile = @tiles[door.position.x+1][door.position.y]
+					tile\addLink @tiles[door.position.x][door.position.y], door, "left"
 
-				if @tiles[door.position.x+1][door.position.y]
-					@dijkstra[tile.posInDijkstra]\addLink @dijkstra[@tiles[door.position.x+1][door.position.y].posInDijkstra], door, "right"
 
-			if door.type == "horizontal" and tile
-				tile\addLink @tiles[door.position.x][door.position.y+1], door, "down"
-
-				if @tiles[door.position.x][door.position.y+1]
-					@dijkstra[tile.posInDijkstra]\addLink @dijkstra[@tiles[door.position.x][door.position.y+1].posInDijkstra], door, "down"
-
+			if door.type == "horizontal"
+				if tile
+					tile\addLink @tiles[door.position.x][door.position.y+1], door, "down"
+				else
+					tile = @tiles[door.position.x][door.position.y+1]
+					tile\addLink @tiles[door.position.x][door.position.y], door, "up"
+			
 		self
+
 
 	update: (dt, battle) =>
 		maxShields = self\getMaxShields!
@@ -225,6 +229,25 @@ class
 		local crewPos
 		local room
 		local oxygen
+		
+		for room in *@rooms
+			links = @\doorsOfRoom room
+				
+			for link in *links
+				if link.door.opened
+					if link.tile
+						roomt = @\roomByPos link.tile.position
+
+						if roomt.oxygen < room.oxygen
+							room.oxygen = room.oxygen - (2.5*dt/1000)
+							roomt.oxygen = roomt.oxygen + (2.5*dt/1000)
+
+							if room.oxygen < roomt.oxygen
+								room.oxygen = (room.oxygen + roomt.oxygen)/2
+								roomt.oxygen = room.oxygen
+
+					else
+						room.oxygen = 0
 		
 		for crewman in *@crew
 			oxygen = true
@@ -319,4 +342,14 @@ class
 					return room
 		print "there is no room at these coordinates"
 
-			
+	doorsOfRoom: (room) =>
+		positions = @\roomByPos(room.position)\positionTiles !
+		
+		links = {}
+		
+		for position in *positions
+			for link in *@tiles[position.x][position.y].links
+				if link.door
+					links[#links+1] = link
+		
+		return links

@@ -36,3 +36,5 @@ class
 				door: door
 			}
 
+	__tostring: =>
+		"<Tile, #{@position.x}:#{@position.y}>"

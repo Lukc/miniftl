@@ -28,4 +28,3 @@ class
 				positions[#positions+1] = tempPos
 	
 		return positions
-				

@@ -79,7 +79,7 @@ class
 						elseif dijkstra[i].position.y > link.tile.position.y
 							link.tile.goTo = "down"
 						
-						print link.tile.goTo .. " " .. link.tile.position.x .. " " .. link.tile.position.y
+--						print link.tile.goTo .. " " .. link.tile.position.x .. " " .. link.tile.position.y
 				
 			dijkstra[i].process = true
 			i = origInd
