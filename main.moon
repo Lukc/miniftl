@@ -70,13 +70,13 @@ ShieldsIndicator = (ship, opts) ->
 		height: 45,
 		theme:
 			drawFrame: (renderer) =>
-				maxShields = player\getMaxShields!
+				maxShields = ship\getMaxShields!
 
 				renderer\setDrawColor 0x0088FF
 
 				renderer\drawRect @rectangle!
 
-				for i = 1, player.shields
+				for i = 1, ship.shields
 					renderer\drawRect
 						x: @realX + (i - 1) * 40 + 5,
 						y: @realY + 5,
@@ -85,20 +85,20 @@ ShieldsIndicator = (ship, opts) ->
 
 				renderer\setDrawColor 0x004488
 
-				for i = player.shields + 1, maxShields
+				for i = ship.shields + 1, maxShields
 					renderer\drawRect
 						x: @realX + (i - 1) * 40 + 5,
 						y: @realY + 5,
 						w: 35,
 						h: 35
 
-				if player.shieldsProgress > 0
+				if ship.shieldsProgress > 0
 					renderer\setDrawColor 0x0088FF
 
 					renderer\drawRect
 						x: @realX + 4 * 40 + 5,
 						y: @realY + 5,
-						w: math.floor math.floor (player.shieldsProgress / Ship.shieldsChargeTime) * 120,
+						w: math.floor math.floor (ship.shieldsProgress / Ship.shieldsChargeTime) * 120,
 						h: 35
 
 HealthIndicator = (ship, opts) ->
