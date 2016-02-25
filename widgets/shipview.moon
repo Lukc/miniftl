@@ -165,7 +165,6 @@ CrewButton = (crew, parent) ->
 
 		theme:
 			drawButton: (renderer) =>
-				print @rectangle!.x, @rectangle!.y
 				renderer\setDrawColor 0x00FF88
 				renderer\drawRect @rectangle!
 
