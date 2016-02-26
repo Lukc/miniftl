@@ -225,29 +225,41 @@ class
 
 				if room.oxygen > 100
 					room.oxygen = 100
+
+		do
+			for room in *@rooms
+				room.oldOxygen = room.oxygen
+
+			for room in *@rooms
+				links = @\doorsOfRoom room
+
+				doors = 0
+				oxygen = 0
+				for link in *links
+					if link.door.opened
+						if link.tile
+							-- Adjacent room.
+							roomt = @\roomByPos link.tile.position
+
+							doors += 1
+							oxygen += roomt.oldOxygen
+
+				room.oxygen = (room.oldOxygen * 60 + oxygen) / (60 + doors)
+
+			for room in *@rooms
+				links = @\doorsOfRoom room
+
+				for link in *links
+					if link.door.opened
+						if not link.tile
+							room.oxygen = 0
+
+			for room in *@rooms
+				room.oxygen = math.max room.oxygen, 0
+				room.oldOxygen = nil
 		
 		local crewPos
 		local room
-		local oxygen
-		
-		for room in *@rooms
-			links = @\doorsOfRoom room
-				
-			for link in *links
-				if link.door.opened
-					if link.tile
-						roomt = @\roomByPos link.tile.position
-
-						if roomt.oxygen < room.oxygen
-							room.oxygen = room.oxygen - (2.5*dt/1000)
-							roomt.oxygen = roomt.oxygen + (2.5*dt/1000)
-
-							if room.oxygen < roomt.oxygen
-								room.oxygen = (room.oxygen + roomt.oxygen)/2
-								roomt.oxygen = room.oxygen
-
-					else
-						room.oxygen = 0
 		
 		for crewman in *@crew
 			oxygen = true
