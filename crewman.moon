@@ -51,7 +51,10 @@ class
 			print "room is already full"
 			return nil
 
-		origInd = tiles[@position.x][@position.y].posInDijkstra
+		x = math.floor (@position.x + 0.5)
+		y = math.floor (@position.y + 0.5)
+
+		origInd = tiles[x][y].posInDijkstra
 		destInd = tiles[destination.x][destination.y].posInDijkstra
 
 		dijkstra[destInd].weight = 0
