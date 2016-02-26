@@ -30,7 +30,7 @@ class
 			n.options = [{
 				label: opt.label,
 				onClick: opt.onClick
-			}for opt in *@options]
+			} for opt in *@options]
 
 		-- Does not use power to work.
 		n.powerless = @powerless
