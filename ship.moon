@@ -106,16 +106,20 @@ class
 		for sys in *@systems
 			powerUsed += sys.power
 
+		local powered
+
 		if system.powerMethod
-			system\powerMethod self, powerUsed
+			powered = system\powerMethod self, powerUsed
 		else
 			if system.power < system.level and powerUsed < @reactorLevel
 				system.power += 1
 
-				true
+				powered = true
 
 		while system.power > system.health and system.power > 0
-			self\unpower system
+			powered = powered and not self\unpower system
+
+		powered
 
 	unpower: (system) =>
 		if system.unpowerMethod

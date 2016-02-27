@@ -46,15 +46,15 @@ System = require "system"
 		options: {
 			{
 				label: "Open doors",
-				onClick: (ship) ->
-					if system.power > 0
+				onClick: (ship) =>
+					if @power > 0
 						for door in *ship.doors
 							door.opened = true
 			},
 			{
 				label: "Close doors",
-				onClick: (ship) ->
-					if system.power > 0
+				onClick: (ship) =>
+					if @power > 0
 						for door in *ship.doors
 							door.opened = false
 			}
