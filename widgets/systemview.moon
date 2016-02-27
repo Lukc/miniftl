@@ -21,7 +21,7 @@ return (system, ship) ->
 			y: 276 - 48 - 5,
 			events:
 				click: (click) =>
-					if click == 1
+					if click == 1 or click == "finger"
 						ship\power system
 					elseif click == 3
 						ship\unpower system
@@ -57,8 +57,8 @@ return (system, ship) ->
 
 				events:
 					click: (button) =>
-						if button == 1 -- left
-							option.onClick ship
+						if button == 1 or button == "finger"
+							option.onClick system, ship
 			}
 
 	frame
