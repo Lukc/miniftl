@@ -43,6 +43,7 @@ System = require "system"
 	},
 
 	doorsControl: System "Doors Control", {
+		powerless: true,
 		options: {
 			{
 				label: "Open doors",
@@ -60,4 +61,11 @@ System = require "system"
 			}
 		}
 	},
+
+	sensors: System "Sensors", {
+		powerless: true
+	},
+
+	teleporter: System "Teleporter", {},
+	drones: System "Drones Control", {},
 }

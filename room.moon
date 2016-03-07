@@ -12,7 +12,10 @@ class
 		n
 
 	__tostring: =>
-		"<Room: #{@width}x#{@height}>"
+		if @system
+			"<Room: #{@width}x#{@height}, #{@system}>"
+		else
+			"<Room: #{@width}x#{@height}>"
 
 	positionTiles: =>
 		positions = {}

@@ -56,15 +56,23 @@ RoomButton = (room, parent) ->
 
 		theme:
 			drawButton: (renderer) =>
-				renderer\setDrawColor {r: math.floor (127 * (100 - room.oxygen) / 100), g: 0, b: 0}
-				renderer\fillRect @rectangle!
+				rect = @rectangle!
+
+				renderer\setDrawColor {
+					r: math.floor (15 * (100 - room.oxygen) / 100),
+					g: math.floor (7 - 7 * (100 - room.oxygen) / 100),
+					b: 0
+				}
+				renderer\fillRect rect
 
 				if room.system
 					renderer\setDrawColor 0x88FF88
 				else
 					renderer\setDrawColor 0x888888
 
-				renderer\drawRect @rectangle!
+				renderer\drawRect rect
+				renderer\drawRect yui.growRectangle rect, -1
+				renderer\drawRect yui.growRectangle rect, -2
 
 				for x = 1, room.width
 					for y = 1, room.height

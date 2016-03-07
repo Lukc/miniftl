@@ -7,7 +7,7 @@ class
 		@distance = 0
 
 	update: (dt, battle) =>
-		@distance += dt * @weapon.projQuickness
+		@distance += dt * @weapon.projectileSpeed
 
 		if @distance >= 1
 			@targetShip\damage self

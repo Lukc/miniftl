@@ -29,20 +29,18 @@ selection = {
 	type: "none"
 }
 
-player = ships.raider2\clone!\finalize!
+player = ships.cruiser1\clone!\finalize!
 
 battle\addShip player, 1
 battle\addShip ships.raider2\clone!\finalize!, 1
 
 battle\addShip ships.raider\clone!\finalize!, 2
-battle\addShip ships.raider2\clone!\finalize!, 2
+battle\addShip ships.cruiser1\clone!\finalize!, 2
 
 with player
 	\addCrew (CrewMan {}, "Luke"), {x: player.rooms[3].position.x, y: player.rooms[3].position.y}
 
 	\addCrew (CrewMan {}, "Leia"), {x: player.rooms[#player.rooms].position.x, y: player.rooms[#player.rooms].position.y}
-
-	.reactorLevel = 18
 
 	\addWeapon Weapon
 		name: "Big Laser"

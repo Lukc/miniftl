@@ -138,9 +138,7 @@ class
 		return 0
 
 	getRoomByCoordinates: (x, y) =>
-		print ">", x, ":", y
 		for room in *@rooms
-			print room.position.x, ":", room.position.y
 			if room.position.x == x and room.position.y == y
 				return room
 
@@ -306,7 +304,7 @@ class
 				@shieldsProgress = 0
 
 	__tostring: =>
-		"<Ship: #{@name}>"
+		"<Ship: #{@name}, #{@health}HP, #{@shields}SP>"
 
 	shieldsChargeTime: 2000
 

@@ -15,7 +15,7 @@ class
 		@power = arg.power or 1
 		@chargeTime = arg.chargeTime or 6000
 		@charge = 0
-		@projQuickness = arg.projQuickness or 1
+		@projectileSpeed = arg.projectileSpeed or 1
 
 		@powered = false
 
