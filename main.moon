@@ -73,6 +73,8 @@ ShieldsIndicator = (ship, opts) ->
 		height: 45,
 		theme:
 			drawFrame: (renderer) =>
+				ship = @ship or ship
+
 				maxShields = ship\getMaxShields!
 
 				renderer\setDrawColor 0x0088FF
@@ -138,6 +140,9 @@ updateTargetView = (ship) =>
 		rotated: true
 
 	e = self\getRoot!\getElementById "targetHealth"
+	e.ship = ship
+
+	e = self\getRoot!\getElementById "targetShields"
 	e.ship = ship
 
 updateTargetSelector = (battle) =>
