@@ -72,10 +72,10 @@ class
 
 	addSystem: (system, room, level) =>
 		system = system\clone!
-		
+
 		unless room
 			error "room is nil"
-		
+
 		unless level
 			error "level is nil"
 
@@ -143,7 +143,6 @@ class
 				return room
 
 	finalize: () =>
-
 		width = 1
 		height = 1
 		@tiles = {}
@@ -173,18 +172,18 @@ class
 
 					if y > height
 						height = y
-					
+
 					unless x == room.position.x
 						tile\addLink @tiles[x-1][y], nil, "left"
 						@dijkstra[tile.posInDijkstra]\addLink @dijkstra[@tiles[x-1][y].posInDijkstra], nil, "left"
-					
+
 					unless y == room.position.y
 						tile\addLink @tiles[x][y-1], nil, "up"
 						@dijkstra[tile.posInDijkstra]\addLink @dijkstra[@tiles[x][y-1].posInDijkstra], nil, "up"
 
 		@tiles.width = width
 		@tiles.height = height
-		
+
 		for i = 1, width
 			unless @tiles[i]
 				@tiles[i] = {}
@@ -206,7 +205,7 @@ class
 				else
 					tile = @tiles[door.position.x][door.position.y+1]
 					tile\addLink @tiles[door.position.x][door.position.y], door, "up"
-			
+
 		self
 
 
@@ -263,18 +262,18 @@ class
 			for room in *@rooms
 				room.oxygen = math.max room.oxygen, 0
 				room.oldOxygen = nil
-		
+
 		local crewPos
 		local room
-		
+
 		for crewman in *@crew
 			oxygen = true
 			crewPos = crewman\roundPos!
 			room = @\roomByPos crewPos
-			
+
 			positions = room\positionTiles!
 			fire = false
-			
+
 			for position in *positions
 				if @tiles[position.x][position.y].fire > 0
 					fire = true
@@ -282,7 +281,7 @@ class
 			if room.oxygen < 30
 				oxygen = false
 			crewman\update dt, battle, fire, oxygen
-		
+
 		for weapon in *@weapons
 			weapon\update dt, battle
 
@@ -321,7 +320,7 @@ class
 			if @shields > 0
 				@shields = @shields - 1
 				return
-		
+
 		@health = @health - damage
 
 		room = projectile.targetRoom
@@ -347,27 +346,27 @@ class
 
 			if (math.random 0, 100) < projectile.weapon.fireChance
 				tile.fire = 100
-			
+
 			if (math.random 0, 100) < projectile.weapon.breachChance
 				tile.breach = 100
 
 
 	roomByPos: (position) =>
-		
 		for room in *@rooms
 			if room.position.x <= position.x and room.position.x + room.width > position.x
 				if room.position.y <= position.y and room.position.y + room.height > position.y
 					return room
+
 		print "there is no room at these coordinates"
 
 	doorsOfRoom: (room) =>
 		positions = @\roomByPos(room.position)\positionTiles !
-		
+
 		links = {}
-		
+
 		for position in *positions
 			for link in *@tiles[position.x][position.y].links
 				if link.door
 					links[#links+1] = link
-		
+
 		return links
