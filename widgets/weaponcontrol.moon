@@ -70,14 +70,16 @@ WeaponControl =
 			renderer\setDrawColor 0xBBBBBB
 		else
 			renderer\setDrawColor 0x888888
+
 		renderer\drawRect @rectangle!
 		renderer\drawRect (yui.growRectangle @rectangle!, -1)
 
-		renderer\drawRect
-			x: @realX + 5,
-			y: @realY + 40,
-			w: 100 * (@weapon.charge / @weapon.chargeTime),
-			h: 10
+		with progress = 100 * (@weapon.charge / @weapon.chargeTime)
+			renderer\drawRect
+				x: @realX + 5,
+				y: @realY + 40,
+				w: progress - progress % 1,
+				h: 10
 
 		yui.Widget.draw self, renderer
 
