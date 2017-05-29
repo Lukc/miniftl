@@ -59,7 +59,7 @@ RoomButton = (room, parent) ->
 				rect = @rectangle!
 
 				renderer\setDrawColor {
-					r: math.floor (15 * (100 - room.oxygen) / 100),
+					r: math.floor (63 * (100 - room.oxygen) / 100),
 					g: math.floor (7 - 7 * (100 - room.oxygen) / 100),
 					b: 0
 				}
@@ -174,8 +174,8 @@ CrewButton = (crew, parent) ->
 					gridWidth, gridHeight = gridHeight, gridWidth
 					x, y = y, x
 
-				@x = (crew.position.x - 1) * 48 + 8 + (parent.width - gridWidth * 48) / 2
-				@y = (crew.position.y - 1) * 48 + 8 + (parent.height - gridHeight * 48) / 2
+				@x = (x - 1) * 48 + 8 + (parent.width - gridWidth * 48) / 2
+				@y = (y - 1) * 48 + 8 + (parent.height - gridHeight * 48) / 2
 
 			click: (button) =>
 				if button == 1 or button == "finger"
